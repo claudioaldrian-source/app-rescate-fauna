@@ -508,26 +508,29 @@ document.getElementById('reporteForm').addEventListener('submit', async function
     // ============================================
     // GUARDAR REPORTE EN LA BASE DE DATOS
     // ============================================
-    const { data, error } = await supabaseClient
-      .from('reportes')
-      .insert([
-        {
-          tipo_animal: document.getElementById('tipoAnimal').value,
-          descripcion: document.getElementById('descripcion').value,
-          urgencia: document.getElementById('urgencia').value,
-          nombre_reportante: document.getElementById('nombre').value || null,
-          telefono: document.getElementById('telefono').value || null,
-          lat: lat,
-          lon: lon,
-          media_url: mediaUrl,
-          media_tipo: mediaFile ? mediaType : null,
-          estado: 'pendiente',
-          fecha: new Date().toISOString()
-        }
-      ]);
+const { data, error } = await supabaseClient
+  .from('reportes-fauna')
+  .insert([
+    {
+      tipo_animal: document.getElementById('tipoAnimal').value,
+      descripcion: document.getElementById('descripcion').value,
+      urgencia: document.getElementById('urgencia').value,
+      nombre_reportante: document.getElementById('nombre').value || null,
+      telefono: document.getElementById('telefono').value || null,
+      lat: lat,
+      lon: lon,
+      media_url: mediaUrl,
+      media_tipo: mediaFile ? mediaType : null,
+      estado: 'pendiente',
+      fecha: new Date().toISOString()
+    }
+  ]);
 
-    if (error) throw error;
-
+if (error) {
+  console.error("ERROR REAL:", error);
+  alert(JSON.stringify(error));
+  return;
+}
     // ============================================
     // ÉXITO
     // ============================================
