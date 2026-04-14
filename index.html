@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>🐍 Reporte de Fauna - Guardafauna Jaauka</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: white;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type=file] {
+      position: absolute;
+      left: -9999px;
+    }
+
+    .file-button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      transition: background 0.3s;
+    }
+
+    .file-button:hover {
+      background: #45a049;
+    }
+
+    .media-preview {
+      margin-top: 15px;
+      border-radius: 10px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .media-preview img,
+    .media-preview video {
+      width: 100%;
+      display: block;
+      border-radius: 10px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+
+    .btn-location {
+      background: #FF9800;
+      color: white;
+    }
+
+    .btn-location:hover {
+      background: #F57C00;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255,152,0,0.3);
+    }
+
+    .btn-submit {
+      background: #667eea;
+      color: white;
+    }
+
+    .btn-submit:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+    }
+
+    .btn-submit:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .ubicacion-info {
+      background: #e8f5e9;
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 10px;
+      display: none;
+      font-size: 13px;
+      color: #2e7d32;
+    }
+
+    .alert {
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    .alert-success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      margin-top: 15px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .media-type-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .media-type-btn {
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      background: white;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+    }
+
+    .media-type-btn.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .optional-badge {
+      background: #FFC107;
+      color: #333;
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-size: 11px;
+      margin-left: 5px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🐍 Reporte de Fauna</h1>
+
+    <div class="card">
+      
+      <div id="alert" class="alert"></div>
+
+      <form id="reporteForm">
+        
+        <!-- Tipo de animal -->
+        <div class="form-group">
+          <label>🦎 Tipo de animal</label>
+          <select id="tipoAnimal" required>
+            <option value="">Seleccioná una opción</option>
+            <option value="vibora">🐍 Víbora / Serpiente</option>
+            <option value="lagarto">🦎 Lagarto / Iguana</option>
+            <option value="tortuga">🐢 Tortuga</option>
+            <option value="ave">🦅 Ave</option>
+            <option value="mamifero">🦊 Mamífero</option>
+            <option value="otro">❓ Otro</option>
+          </select>
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-group">
+          <label>📝 Descripción del avistamiento</label>
+          <textarea 
+            id="descripcion" 
+            placeholder="Ej: Víbora de coral en el patio trasero, aproximadamente 1 metro..."
+            required
+          ></textarea>
+        </div>
+
+        <!-- Nivel de urgencia -->
+        <div class="form-group">
+          <label>⚠️ Nivel de urgencia</label>
+          <select id="urgencia" required>
+            <option value="baja">🟢 Baja - Solo avistamiento</option>
+            <option value="media">🟡 Media - Animal cerca de personas</option>
+            <option value="alta">🔴 Alta - Situación de riesgo</option>
+          </select>
+        </div>
+
+        <!-- Datos de contacto -->
+        <div class="form-group">
+          <label>👤 Tu nombre (opcional)</label>
+          <input type="text" id="nombre" placeholder="Nombre y apellido">
+        </div>
+
+        <div class="form-group">
+          <label>📱 Teléfono de contacto (opcional)</label>
+          <input type="tel" id="telefono" placeholder="Ej: 3482-123456">
+        </div>
+
+        <!-- Selector de tipo de media -->
+        <div class="form-group">
+          <label>📷 Foto o Video <span class="optional-badge">OPCIONAL</span></label>
+          <div class="media-type-selector">
+            <button type="button" class="media-type-btn active" data-type="foto">
+              📷 Foto
+            </button>
+            <button type="button" class="media-type-btn" data-type="video">
+              🎥 Video
+            </button>
+          </div>
+
+          <div class="file-input-wrapper">
+            <input 
+              type="file" 
+              id="mediaInput" 
+              accept="image/*" 
+              capture="environment"
+            >
+            <label for="mediaInput" class="file-button" id="mediaButtonLabel">
+              📷 Tomar/Subir Foto
+            </label>
+          </div>
+
+          <div id="mediaPreview" class="media-preview"></div>
+        </div>
+
+        <!-- Ubicación -->
+        <div class="form-group">
+          <button type="button" class="btn btn-location" onclick="obtenerUbicacion()">
+            📍 Obtener Mi Ubicación
+          </button>
+          <div id="ubicacionInfo" class="ubicacion-info"></div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-submit" id="btnSubmit">
+          🚀 Enviar Reporte
+        </button>
+
+        <div class="loading" id="loading">
+          <div class="spinner"></div>
+          <p>Enviando reporte...</p>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+
+// ============================================
+// CONFIGURACIÓN DE SUPABASE
+// ============================================
+// ⚠️ REEMPLAZÁ ESTOS VALORES CON TUS CREDENCIALES
+const SUPABASE_URL = 'https://iilefvoxigwozzbzgdzb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpbGVmdm94aWd3b3p6YnpnZHpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2MzE4MTAsImV4cCI6MjA3ODIwNzgxMH0.NK5fR9dsYMlweLAICf4ZWIUVcusho1z3kW0AAfzXwqc';
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ============================================
+// VARIABLES GLOBALES
+// ============================================
+let lat = null;
+let lon = null;
+let mediaFile = null;
+let mediaType = 'foto'; // 'foto' o 'video'
+
+// ============================================
+// SELECTOR DE TIPO DE MEDIA
+// ============================================
+document.querySelectorAll('.media-type-btn').forEach(btn => {
+  btn.addEventListener('click', function() {
+    document.querySelectorAll('.media-type-btn').forEach(b => b.classList.remove('active'));
+    this.classList.add('active');
+    
+    mediaType = this.dataset.type;
+    const input = document.getElementById('mediaInput');
+    const label = document.getElementById('mediaButtonLabel');
+    
+    if (mediaType === 'foto') {
+      input.accept = 'image/*';
+      label.textContent = '📷 Tomar/Subir Foto';
+    } else {
+      input.accept = 'video/*';
+      label.textContent = '🎥 Grabar/Subir Video';
+    }
+    
+    // Limpiar preview
+    document.getElementById('mediaPreview').style.display = 'none';
+    document.getElementById('mediaPreview').innerHTML = '';
+    mediaFile = null;
+  });
+});
+
+// ============================================
+// PREVIEW DE FOTO/VIDEO
+// ============================================
+document.getElementById('mediaInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  mediaFile = file;
+  const preview = document.getElementById('mediaPreview');
+  const reader = new FileReader();
+
+  reader.onload = function(event) {
+    if (file.type.startsWith('image/')) {
+      preview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
+    } else if (file.type.startsWith('video/')) {
+      preview.innerHTML = `<video controls src="${event.target.result}"></video>`;
+    }
+    preview.style.display = 'block';
+  };
+
+  reader.readAsDataURL(file);
+});
+
+// ============================================
+// OBTENER UBICACIÓN GPS
+// ============================================
+function obtenerUbicacion(){
+  const info = document.getElementById('ubicacionInfo');
+  info.style.display = 'block';
+  info.innerHTML = '🔄 Obteniendo ubicación...';
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos){
+      lat = pos.coords.latitude;
+      lon = pos.coords.longitude;
+
+      info.innerHTML =
+        "✅ Ubicación obtenida<br>📍 Lat: " +
+        lat.toFixed(6) +
+        " | Lon: " +
+        lon.toFixed(6);
+    },
+    function(error){
+      info.innerHTML = "❌ Error obteniendo ubicación";
+      console.log(error);
+    }
+  );
+}
+
+// ============================================
+// MOSTRAR ALERTAS
+// ============================================
+function mostrarAlerta(mensaje, tipo) {
+  const alert = document.getElementById('alert');
+  alert.className = `alert alert-${tipo}`;
+  alert.textContent = mensaje;
+  alert.style.display = 'block';
+  
+  setTimeout(() => {
+    alert.style.display = 'none';
+  }, 5000);
+}
+
+// ============================================
+// ENVIAR REPORTE
+// ============================================
+document.getElementById('reporteForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  // Validaciones
+  if (!lat || !lon) {
+    mostrarAlerta('⚠️ Por favor obtené tu ubicación primero', 'error');
+    return;
+  }
+
+  const btnSubmit = document.getElementById('btnSubmit');
+  const loading = document.getElementById('loading');
+
+  btnSubmit.disabled = true;
+  loading.style.display = 'block';
+
+  try {
+    let mediaUrl = null;
+
+    // ============================================
+    // SUBIR FOTO/VIDEO SI HAY
+    // ============================================
+    if (mediaFile) {
+      const timestamp = Date.now();
+      const extension = mediaFile.name.split('.').pop();
+      const fileName = `${mediaType}_${timestamp}.${extension}`;
+      const filePath = `reportes/${fileName}`;
+
+      const { data: uploadData, error: uploadError } = await supabaseClient.storage
+        .from('fauna-media')
+        .upload(filePath, mediaFile);
+
+      if (uploadError) throw uploadError;
+
+      // Obtener URL pública
+      const { data: urlData } = supabaseClient.storage
+        .from('fauna-media')
+        .getPublicUrl(filePath);
+
+      mediaUrl = urlData.publicUrl;
+    }
+
+    // ============================================
+    // GUARDAR REPORTE EN LA BASE DE DATOS
+    // ============================================
+    const { data, error } = await supabaseClient
+      .from('reportes')
+      .insert([
+        {
+          tipo_animal: document.getElementById('tipoAnimal').value,
+          descripcion: document.getElementById('descripcion').value,
+          urgencia: document.getElementById('urgencia').value,
+          nombre_reportante: document.getElementById('nombre').value || null,
+          telefono: document.getElementById('telefono').value || null,
+          lat: lat,
+          lon: lon,
+          media_url: mediaUrl,
+          media_tipo: mediaFile ? mediaType : null,
+          estado: 'pendiente',
+          fecha: new Date().toISOString()
+        }
+      ]);
+
+    if (error) throw error;
+
+    // ============================================
+    // ÉXITO
+    // ============================================
+    mostrarAlerta('✅ ¡Reporte enviado correctamente! Guardafauna lo recibirá pronto.', 'success');
+    
+    // Limpiar formulario
+    document.getElementById('reporteForm').reset();
+    document.getElementById('mediaPreview').style.display = 'none';
+    document.getElementById('ubicacionInfo').style.display = 'none';
+    lat = null;
+    lon = null;
+    mediaFile = null;
+
+  } catch (error) {
+    console.error('Error:', error);
+    mostrarAlerta('❌ Error al enviar: ' + error.message, 'error');
+  } finally {
+    btnSubmit.disabled = false;
+    loading.style.display = 'none';
+  }
+});
+
+</script>
+
+</body>
+</html>
