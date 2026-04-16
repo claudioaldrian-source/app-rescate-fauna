@@ -34,13 +34,13 @@
 
     .card {
       background: white;
-      padding: 25px;
+      padding: 10px;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
     .form-group {
-      margin-bottom: 20px;
+      margin-bottom: 5px;
     }
 
     label {
@@ -123,14 +123,14 @@
 
     .btn {
       width: 100%;
-      padding: 15px;
+      padding: 7px;
       border: none;
       border-radius: 10px;
       font-size: 16px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s;
-      margin-top: 10px;
+      margin-top: 5px;
     }
 
     .btn-location {
@@ -243,12 +243,63 @@
       margin-left: 5px;
       font-weight: 600;
     }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.logo {
+  height: 85px;
+  width: auto;
+}
+
+@media (max-width: 600px) {
+  .logo {
+    height: 50px;
+  }
+}
+
+.header-text {
+  text-align: center;
+  flex: 1;
+  color: white;
+}
+
+.btn-audio {
+  background: #6c757d;
+  color: white;
+  font-size: 14px;
+  padding: 10px;
+}
+
+.btn-audio:hover {
+  background: #5a6268;
+}
+.titulo-principal {
+  color: #A8E063;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>🐍 Reporte de Fauna</h1>
+
+<div class="header">
+  <img src="logo-jauka.png" class="logo">
+
+  <div class="header-text">
+    <h1 class="titulo-principal">🐍 Reporte Guardafauna Jaauka</h1>
+    <p>Sistema sincronizado por Macla-IA</p>
+    <p>de Claudio ALDRIAN</p>
+  </div>
+
+  <img src="logo_macla.png" class="logo">
+</div>
 
     <div class="card">
       
@@ -280,6 +331,12 @@
           ></textarea>
         </div>
 
+<div class="form-group">
+  <button type="button" class="btn btn-audio" onclick="grabarAudio()">
+    🎤 Grabar Audio
+  </button>
+</div>
+
         <!-- Nivel de urgencia -->
         <div class="form-group">
           <label>⚠️ Nivel de urgencia</label>
@@ -302,31 +359,26 @@
         </div>
 
         <!-- Selector de tipo de media -->
-        <div class="form-group">
-          <label>📷 Foto o Video <span class="optional-badge">OPCIONAL</span></label>
-          <div class="media-type-selector">
-            <button type="button" class="media-type-btn active" data-type="foto">
-              📷 Foto
-            </button>
-            <button type="button" class="media-type-btn" data-type="video">
-              🎥 Video
-            </button>
-          </div>
+<div class="form-group">
+  <label>📷 Foto o Video <span class="optional-badge">OPCIONAL</span></label>
 
-          <div class="file-input-wrapper">
-            <input 
-              type="file" 
-              id="mediaInput" 
-              accept="image/*" 
-              capture="environment"
-            >
-            <label for="mediaInput" class="file-button" id="mediaButtonLabel">
-              📷 Tomar/Subir Foto
-            </label>
-          </div>
+  <!-- BOTONES FOTO / VIDEO -->
+  <div class="media-type-selector">
+    <button type="button" class="media-type-btn active" data-type="foto">
+      📷 Foto
+    </button>
+    <button type="button" class="media-type-btn" data-type="video">
+      🎥 Video
+    </button>
+  </div>
 
-          <div id="mediaPreview" class="media-preview"></div>
-        </div>
+  <!-- INPUT OCULTO -->
+  <input type="file" id="mediaInput" style="display:none;">
+
+
+  <!-- PREVIEW -->
+  <div id="mediaPreview" class="media-preview"></div>
+</div>
 
         <!-- Ubicación -->
         <div class="form-group">
@@ -376,25 +428,32 @@ let mediaType = 'foto'; // 'foto' o 'video'
 // ============================================
 document.querySelectorAll('.media-type-btn').forEach(btn => {
   btn.addEventListener('click', function() {
+
+    // Activar botón visual
     document.querySelectorAll('.media-type-btn').forEach(b => b.classList.remove('active'));
     this.classList.add('active');
-    
+
     mediaType = this.dataset.type;
+
     const input = document.getElementById('mediaInput');
-    const label = document.getElementById('mediaButtonLabel');
-    
+
+    // Definir tipo
     if (mediaType === 'foto') {
       input.accept = 'image/*';
-      label.textContent = '📷 Tomar/Subir Foto';
     } else {
       input.accept = 'video/*';
-      label.textContent = '🎥 Grabar/Subir Video';
     }
-    
-    // Limpiar preview
-    document.getElementById('mediaPreview').style.display = 'none';
-    document.getElementById('mediaPreview').innerHTML = '';
+
+    // 🔥 ABRIR CÁMARA / ARCHIVO DIRECTO
+    input.click();
+
+    // Limpiar preview anterior
+    const preview = document.getElementById('mediaPreview');
+    preview.style.display = 'none';
+    preview.innerHTML = '';
+
     mediaFile = null;
+
   });
 });
 
@@ -427,24 +486,69 @@ document.getElementById('mediaInput').addEventListener('change', function(e) {
 function obtenerUbicacion(){
   const info = document.getElementById('ubicacionInfo');
   info.style.display = 'block';
-  info.innerHTML = '🔄 Obteniendo ubicación...';
+  info.innerHTML = '🔄 Buscando ubicación precisa...';
 
-  navigator.geolocation.getCurrentPosition(
-    function(pos){
-      lat = pos.coords.latitude;
-      lon = pos.coords.longitude;
+  let mejorPrecision = Infinity;
+  let mejorLat = null;
+  let mejorLon = null;
 
-      info.innerHTML =
-        "✅ Ubicación obtenida<br>📍 Lat: " +
-        lat.toFixed(6) +
-        " | Lon: " +
-        lon.toFixed(6);
+  const watchId = navigator.geolocation.watchPosition(
+    (position) => {
+
+      const accuracy = position.coords.accuracy;
+
+      // Guardar la mejor ubicación encontrada
+      if (accuracy < mejorPrecision) {
+        mejorPrecision = accuracy;
+        mejorLat = position.coords.latitude;
+        mejorLon = position.coords.longitude;
+      }
+
+      // Mostrar en pantalla
+      info.innerHTML = `
+        📡 Mejorando precisión...<br>
+        Precisión: ${accuracy.toFixed(0)} metros<br><br>
+        Lat: ${position.coords.latitude.toFixed(6)}<br>
+        Lon: ${position.coords.longitude.toFixed(6)}
+      `;
+
+      // Si ya es buena precisión, cortar
+      if (accuracy < 15) {
+        finalizarUbicacion();
+      }
+
     },
-    function(error){
-      info.innerHTML = "❌ Error obteniendo ubicación";
-      console.log(error);
+    (error) => {
+      info.innerHTML = "❌ No se pudo obtener ubicación";
+      alert("Error obteniendo ubicación");
+    },
+    {
+      enableHighAccuracy: true,
+      maximumAge: 0,
+      timeout: 20000
     }
   );
+
+  function finalizarUbicacion() {
+    navigator.geolocation.clearWatch(watchId);
+
+    lat = mejorLat;
+    lon = mejorLon;
+
+    info.innerHTML = `
+      ✅ Ubicación precisa obtenida<br>
+      Precisión: ${mejorPrecision.toFixed(0)} metros<br><br>
+      Lat: ${lat.toFixed(6)}<br>
+      Lon: ${lon.toFixed(6)}
+    `;
+  }
+
+  // Backup: cortar a los 10 segundos sí o sí
+  setTimeout(() => {
+    if (mejorLat !== null) {
+      finalizarUbicacion();
+    }
+  }, 10000);
 }
 
 // ============================================
@@ -486,10 +590,18 @@ document.getElementById('reporteForm').addEventListener('submit', async function
     // SUBIR FOTO/VIDEO SI HAY
     // ============================================
     if (mediaFile) {
-      const timestamp = Date.now();
-      const extension = mediaFile.name.split('.').pop();
-      const fileName = `${mediaType}_${timestamp}.${extension}`;
-      const filePath = `reportes/${fileName}`;
+  const timestamp = Date.now();
+
+  let extension;
+
+  if (mediaType === 'audio') {
+    extension = 'webm';
+  } else {
+    extension = mediaFile.name.split('.').pop();
+  }
+
+  const fileName = `${mediaType}_${timestamp}.${extension}`;
+  const filePath = `reportes/${fileName}`;
 
       const { data: uploadData, error: uploadError } = await supabaseClient.storage
         .from('fauna-media')
@@ -552,6 +664,37 @@ if (error) {
     loading.style.display = 'none';
   }
 });
+
+let mediaRecorder;
+let audioChunks = [];
+
+async function grabarAudio() {
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+  mediaRecorder = new MediaRecorder(stream);
+  audioChunks = [];
+
+  mediaRecorder.start();
+
+  alert("🎤 Grabando audio...");
+
+  mediaRecorder.ondataavailable = e => {
+    audioChunks.push(e.data);
+  };
+
+  mediaRecorder.onstop = () => {
+    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+
+    mediaFile = audioBlob;
+    mediaType = 'audio';
+
+    alert("✅ Audio listo");
+  };
+
+  setTimeout(() => {
+    mediaRecorder.stop();
+  }, 5000);
+}
 
 </script>
 

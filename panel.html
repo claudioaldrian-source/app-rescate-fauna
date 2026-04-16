@@ -97,7 +97,7 @@
 
     .header {
       background: white;
-      padding: 15px 20px;
+      padding: 5px 20px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       display: flex;
       align-items: center;
@@ -113,7 +113,7 @@
     }
 
     .logo-container {
-      height: 60px;
+      height: 100px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -169,27 +169,31 @@
     /* FILTROS Y ESTADÍSTICAS */
     /* ============================================ */
     .controls {
-      background: white;
-      padding: 20px;
-      margin: 20px;
-      border-radius: 15px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+  background: #f5f7fa;
+  padding: 4px;       /* un poco menos */
+  margin: 5px;
+  border-radius: 15px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 110px; /* 👈 altura del header aprox */
+  z-index: 900;
+  display: flex;               /* 👈 CLAVE */
+  flex-direction: column;      /* 👈 LOS PONE UNO ABAJO DEL OTRO */
+  gap: 5px;                   /* espacio entre stats y filtros */
+}
 
     .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-      margin-bottom: 20px;
-    }
+  display: flex;
+  gap: 8px;
+  margin-bottom: 5px;
+}
 
     .stat-card {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 15px;
-      border-radius: 10px;
-      text-align: center;
-    }
+  flex: 1;                 /* 👈 todas iguales */
+  padding: 4px 15px;        /* 👈 MÁS BAJO */
+  border-radius: 10px;
+  min-height: auto;        /* 👈 IMPORTANTE */
+}
 
     .stat-card.pending {
       background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -203,52 +207,75 @@
       background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
     }
 
-    .stat-number {
-      font-size: 32px;
-      font-weight: 700;
-    }
+    .stat-card.total {
+     background: linear-gradient(135deg, #ffb74d 0%, #ff9800 100%);
+     }
 
-    .stat-label {
-      font-size: 14px;
-      opacity: 0.9;
+     .stat-label {
+      font-size: 13px;
+      opacity: 1;
       margin-top: 5px;
     }
 
+    .stat-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  }
+
     .filters {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
+      display: flex;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+      flex: 1;              /* 👈 NO ocupa todo */
+      flex-wrap: wrap;    /* 👈 NO baja */
     }
 
     .filter-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 600;
-      color: #333;
-      font-size: 14px;
+  display: inline;       /* 👈 ya no baja */
+  margin-bottom: 0;      /* 👈 sacamos espacio */
+  font-weight: 600;
+  color: #333;
+  font-size: 13px;
+      white-space: nowrap;   /* 👈 evita salto de línea */
     }
 
-    .filter-group select {
-      width: 100%;
-      padding: 10px;
+    .filter-group select {      
+      padding: 6px 8px;     /* 👈 más compacto */
       border: 2px solid #e0e0e0;
-      border-radius: 8px;
-      font-size: 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      min-width: 210px;
     }
+
+    .filters-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
     /* ============================================ */
     /* LISTA DE REPORTES */
     /* ============================================ */
     .reportes-container {
-      padding: 0 20px 20px;
-    }
+  padding: 0 20px 20px;
+  max-height: calc(100vh - 220px); /* 👈 ajustable */
+  overflow-y: auto;
+}
 
     .reporte-card {
       background: white;
-      padding: 20px;
-      border-radius: 15px;
+      padding: 10px 12px;
+      border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      margin-bottom: 20px;
+      margin-bottom: 10px;
       transition: transform 0.3s, box-shadow 0.3s;
     }
 
@@ -258,18 +285,22 @@
     }
 
     .reporte-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 10px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin-bottom: 5px;
+}
 
     .reporte-fecha {
-      font-size: 14px;
-      color: #666;
-    }
+  font-size: 13px;
+  color: #555;
+  font-weight: 600;
+  white-space: nowrap;
+}
 
     .urgencia-badge {
       padding: 5px 12px;
@@ -294,11 +325,52 @@
       color: #c62828;
     }
 
+    /* ============================================ */
+    /* BOTONES MINI PARA MEDIA */
+    /* ============================================ */
+    .btn-mini {
+  padding: 6px 12px;      /* 👈 más grande */
+  font-size: 18px;        /* 👈 icono más grande */
+  border-radius: 10px;    /* 👈 menos redondeado */
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+    .btn-mini:hover {
+  transform: scale(1.15);   /* 👈 más efecto */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+    .btn-mini.video {
+  background: #bbdefb;
+}
+
+.btn-mini.foto {
+  background: #c8e6c9;
+}
+
+.btn-mini.audio {
+  background: #e1bee7;
+}
+
     .reporte-info {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* 👈 RESPONSIVO REAL */
+  gap: 10px;
+  font-size: 13px;
+  align-items: center;
+}
+
+.reporte-info span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: normal;        /* 👈 permite salto */
+  overflow-wrap: anywhere;    /* 👈 evita que se salga */
+}
 
     .info-row {
       display: flex;
@@ -339,14 +411,14 @@
 
     .action-btn {
       flex: 1;
-      min-width: 150px;
-      padding: 10px 15px;
+      min-width: auto;
+      padding: 6px 10px;
       border: none;
       border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .btn-mapa {
@@ -379,9 +451,9 @@
 
     .estado-badge {
       display: inline-block;
-      padding: 5px 12px;
+      padding: 3px 6px;
       border-radius: 20px;
-      font-size: 12px;
+      font-size: 10px;
       font-weight: 700;
       margin-left: 10px;
     }
@@ -419,15 +491,7 @@
         justify-content: center;
       }
 
-      .header-title {
-        width: 100%;
-      }
-
-      .filters {
-        grid-template-columns: 1fr;
-      }
-
-      .action-btn {
+     .action-btn {
         min-width: 100%;
       }
     }
@@ -435,11 +499,12 @@
     .new-badge {
       background: #ff5252;
       color: white;
-      padding: 3px 8px;
+      padding: 3px 6px;
       border-radius: 5px;
-      font-size: 11px;
+      font-size: 10px;
       margin-left: 10px;
       animation: pulse 2s infinite;
+      flex-shrink: 0;
     }
 
     @keyframes pulse {
@@ -447,23 +512,118 @@
       50% { opacity: 0.6; }
     }
 
-  .logo-left,
-  .logo-right {
-  height: 80px;
+.logo-left,
+.logo-right {
+  height: 80px; /* 👈 un poco más chico queda mejor */
   width: auto;
   object-fit: contain;
 }
 
+/* HEADER COMPLETO */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: white;
 }
 
+/* TÍTULO */
 .header-title {
   flex: 1;
   text-align: center;
+}
+
+/* ACCIONES (hora + botón) */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* HORA */
+#horaActual {
+  font-size: 13px;
+  color: #555;
+}
+.btn-mini {
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: #e0e0e0;
+}
+
+.reporte-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.stat-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.stat-number {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.btn-mapa,
+.btn-en-proceso,
+.btn-completado {
+  padding: 6px 10px;   /* 👈 MÁS CHICO */
+  font-size: 13px;
+  border-radius: 6px;
+  min-width: auto;     /* 👈 importante */
+}
+
+.btn-export {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px; 
+  margin-left: auto;   /* 👈 se va a la derecha */
+}
+
+.btn-export:hover {
+  background: #43a047;
+}
+
+.btn-recibido {
+  background: #81c784; /* verde suave */
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-recibido:hover {
+  background: #43a047;
+}
+
+.estado-respondido {
+  background: #ffcdd2;      /* rojo claro */
+  color: #b71c1c;           /* rojo fuerte */
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 600;
 }
 
   </style>
@@ -475,7 +635,12 @@
   <!-- ============================================ -->
   <div id="loginScreen">
     <div class="login-card">
-      <h2>🌿 Panel Guardafauna</h2>
+
+<img src="logo-jauka.png" style="max-width:150px; margin-bottom:6px; border-radius:10px;">
+
+<img src="logo_macla.png" style="max-width:150px; margin-bottom:6px; border-radius:10px;">
+
+      <h2>🌿 Guardafauna Jaauka</h2>
       <div id="loginError" class="login-error"></div>
       <form id="loginForm">
         <input 
@@ -504,40 +669,60 @@
   <!-- TÍTULO -->
   <div class="header-title">
     <h1>🌿 Panel de Reportes</h1>
-    <p>Guardafauna Jaauka - Sistema de gestión</p>
+<h1>Guardafauna Jaauka</h1>
+    <p>Sistema de gestionado por Macla-IA</p>
   </div>
 
   <!-- LOGO DERECHO -->
   <img src="logo_macla.png" class="logo-right" alt="MACLA-IA">
 
-  <!-- BOTÓN -->
+<!-- 👇 NUEVO BLOQUE -->
+  <div class="header-actions">
+    <div id="horaActual"></div>
+
   <button class="logout-btn" onclick="cerrarSesion()">
     🚪 Cerrar Sesión
   </button>
+</div>
 
 </div>
 
     <!-- ESTADÍSTICAS Y FILTROS -->
     <div class="controls">
       <div class="stats">
-        <div class="stat-card pending">
-          <div class="stat-number" id="statPendientes">0</div>
-          <div class="stat-label">Pendientes</div>
-        </div>
-        <div class="stat-card in-progress">
-          <div class="stat-number" id="statEnProceso">0</div>
-          <div class="stat-label">En Proceso</div>
-        </div>
-        <div class="stat-card completed">
-          <div class="stat-number" id="statCompletados">0</div>
-          <div class="stat-label">Completados</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number" id="statTotal">0</div>
-          <div class="stat-label">Total</div>
-        </div>
-      </div>
+        
+  <div class="stat-card pending">
+    <div class="stat-content">
+    <span class="stat-label">Pendientes</span>
+    <span class="stat-number" id="statPendientes">0</span>
+    </div>
+  </div>
 
+  <div class="stat-card in-progress">
+    <div class="stat-content">
+    <span class="stat-label">En Proceso</span>
+    <span class="stat-number" id="statEnProceso">0</span>
+    </div>
+  </div>
+
+     <div class="stat-card completed">
+    <div class="stat-content">
+    <span class="stat-label">Completados</span>
+    <span class="stat-number" id="statCompletados">0</span>
+     </div>
+    </div> 
+     
+    <div class="stat-card total">
+    <div class="stat-content">
+    <span class="stat-label">Total</span>
+    <span class="stat-number" id="statTotal">0</span>
+     </div>
+    </div>
+
+</div>
+
+    
+<div class="filters-row">
       <div class="filters">
         <div class="filter-group">
           <label>🔍 Filtrar por estado</label>
@@ -571,7 +756,14 @@
             <option value="otro">Otro</option>
           </select>
         </div>
+
+
       </div>
+<div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+  <button onclick="exportarExcel()" class="btn-export">
+    📊 Excel
+  </button>
+</div>
     </div>
 
     <!-- LISTA DE REPORTES -->
@@ -683,8 +875,6 @@ async function cargarReportes() {
   }
 }
 
-
-
 // ============================================
 // SUSCRIBIRSE A CAMBIOS EN TIEMPO REAL
 // ============================================
@@ -695,7 +885,14 @@ function suscribirseACambios() {
       { event: '*', schema: 'public', table: 'reportes-fauna' },
       (payload) => {
         console.log('Cambio detectado:', payload);
+        
+     // 👇 SOLUCIÓN
         cargarReportes();
+
+   setTimeout(() => {
+  aplicarFiltros();
+  actualizarEstadisticas();
+}, 300);
       }
     )
     .subscribe();
@@ -761,27 +958,64 @@ function renderizarReportes() {
   }
 
   container.innerHTML = reportesMostrados.map(reporte => {
-    const fecha = new Date(reporte.fecha);
-    const fechaFormateada = fecha.toLocaleString('es-AR');
+    const fechaObj = new Date(reporte.fecha);
 
-    // Determinar si es nuevo (menos de 1 hora)
-    const esNuevo = (Date.now() - fecha.getTime()) < 3600000;
+const fechaFormateada = fechaObj.toLocaleDateString('es-AR') + ' ' +
+  fechaObj.toLocaleTimeString('es-AR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false   // 👈 CLAVE
+  });
+
+    // Determinar si es nuevo 
+    const HORAS_NUEVO = 1; // podés cambiar fácil
+const esNuevo = (Date.now() - fechaObj.getTime()) < (HORAS_NUEVO * 60 * 60 * 1000);
 
     return `
       <div class="reporte-card">
+
         <div class="reporte-header">
-          <div>
-            <span class="reporte-fecha">📅 ${fechaFormateada}</span>
-            ${esNuevo ? '<span class="new-badge">NUEVO</span>' : ''}
-            <span class="estado-badge estado-${reporte.estado}">
-              ${reporte.estado.toUpperCase().replace('-', ' ')}
-            </span>
-          </div>
-          <span class="urgencia-badge urgencia-${reporte.urgencia}">
-            ${reporte.urgencia === 'alta' ? '🔴' : reporte.urgencia === 'media' ? '🟡' : '🟢'}
-            ${reporte.urgencia.toUpperCase()}
-          </span>
-        </div>
+
+  <!-- 1. FECHA/HORA -->
+  <span class="reporte-fecha">📅 ${fechaFormateada}</span>
+
+  <!-- 2. BADGE NUEVO (si aplica) -->
+  ${esNuevo ? '<span class="new-badge">🆕 NUEVO</span>' : ''}
+
+  <!-- 3. ESTADO -->
+  <span class="estado-badge estado-${reporte.estado}">
+    ${reporte.estado.toUpperCase().replace('-', ' ')}
+  </span>
+
+  <!-- 4. BOTONES DE MEDIA (Video/Audio/Foto) -->
+  ${reporte.media_url ? `
+    ${(reporte.media_url.match(/\.(mp4|webm|ogg)/i)) ? `
+      <button onclick="verVideo('${reporte.media_url}')" class="btn-mini video" title="Ver video">
+        🎥 Ver video
+      </button>
+    ` : `
+      <button onclick="verFoto('${reporte.media_url}')" class="btn-mini foto" title="Ver foto">
+        📷 Ver foto
+      </button>
+    `}
+  ` : ''}
+
+  ${reporte.audio_url ? `
+    <button onclick="reproducirAudio('${reporte.audio_url}')" class="btn-mini audio" title="Reproducir audio">
+      🔊 Escuchar audio
+    </button>
+  ` : ''}
+
+
+
+  <!-- 5. URGENCIA (al final) -->
+  <span class="urgencia-badge urgencia-${reporte.urgencia}">
+    ${reporte.urgencia === 'alta' ? '🔴' : reporte.urgencia === 'media' ? '🟡' : '🟢'}
+    ${reporte.urgencia.toUpperCase()}
+  </span>
+
+
+</div>
 
         <div class="reporte-info">
           <div class="info-row">
@@ -805,7 +1039,9 @@ function renderizarReportes() {
           <div class="info-row">
             <span class="info-label">📱 Teléfono:</span>
             <span class="info-value">
-              <a href="tel:${reporte.telefono}">${reporte.telefono}</a>
+              <a href="https://wa.me/54${reporte.telefono}?text=Hola, recibimos tu reporte de fauna" target="_blank">
+  ${reporte.telefono}
+</a>
             </span>
           </div>
           ` : ''}
@@ -818,17 +1054,7 @@ function renderizarReportes() {
           </div>
         </div>
 
-        ${reporte.media_url ? `
-        <div class="reporte-media">
-          ${reporte.media_tipo === 'video' ? `
-            <video controls>
-              <source src="${reporte.media_url}" type="video/mp4">
-            </video>
-          ` : `
-            <img src="${reporte.media_url}" alt="Foto del avistamiento">
-          `}
-        </div>
-        ` : ''}
+       
 
         <div class="reporte-actions">
           <button class="action-btn btn-mapa" onclick="abrirMapa(${reporte.lat}, ${reporte.lon})">
@@ -836,18 +1062,19 @@ function renderizarReportes() {
           </button>
 
           ${reporte.estado === 'pendiente' ? `
-            <button class="action-btn btn-en-proceso" onclick="cambiarEstado(${reporte.id}, 'en-proceso')">
-              🔄 Marcar En Proceso
-            </button>
-          ` : ''}
+  <button class="action-btn btn-en-proceso" onclick="cambiarEstado(${reporte.id}, 'en-proceso')">
+    📩 Marcar Recibido
+  </button>
+` : ''}
 
-          ${reporte.estado === 'en-proceso' ? `
-            <button class="action-btn btn-completado" onclick="cambiarEstado(${reporte.id}, 'completado')">
-              ✅ Marcar Completado
-            </button>
-          ` : ''}
-        </div>
-      </div>
+${reporte.estado === 'en-proceso' ? `
+  <button class="action-btn btn-completado" onclick="cambiarEstado(${reporte.id}, 'completado')">
+    ✅ Marcar Completado
+  </button>
+` : ''}
+
+</div>   <!-- cierre de reporte-actions -->
+</div>   <!-- cierre de reporte-card -->
     `;
   }).join('');
 }
@@ -883,15 +1110,174 @@ async function cambiarEstado(id, nuevoEstado) {
 
     if (error) throw error;
 
+    cargarReportes();
+
     // La actualización en tiempo real se encargará de recargar
   } catch (error) {
     alert('Error al actualizar estado: ' + error.message);
   }
 }
 
-cargarReportes();
+setInterval(() => {
+  cargarReportes();
+}, 5000); // cada 5 segundos
+
+
+// VER FOTO
+
+function verFoto(url) {
+  const modal = document.getElementById('modalMedia');
+  const contenido = document.getElementById('contenidoModal');
+
+  contenido.innerHTML = `
+    <div id="zoomContainer" style="overflow:hidden; cursor:grab;">
+      <img id="imgZoom" src="${url}" style="max-width:100%; transition: transform 0.2s;">
+    </div>
+  `;
+
+  modal.style.display = 'flex';
+
+  const img = document.getElementById('imgZoom');
+  let scale = 1;
+
+  // Zoom con rueda del mouse
+  contenido.onwheel = (e) => {
+    e.preventDefault();
+    scale += e.deltaY * -0.001;
+    scale = Math.min(Math.max(1, scale), 4);
+    img.style.transform = `scale(${scale})`;
+  };
+
+  // Doble click zoom
+  img.ondblclick = () => {
+    scale = scale === 1 ? 2 : 1;
+    img.style.transform = `scale(${scale})`;
+  };
+}
+
+// 	VER VIDEO
+function verVideo(url) {
+  const modal = document.getElementById('modalMedia');
+  const contenido = document.getElementById('contenidoModal');
+
+  contenido.innerHTML = `
+    <video controls style="max-width:100%; max-height:80vh;">
+      <source src="${url}" type="video/mp4">
+    </video>
+  `;
+  modal.style.display = 'flex';
+}
+
+// REPRODUCIR AUDIO
+function reproducirAudio(url) {
+  const modal = document.getElementById('modalMedia');
+  const contenido = document.getElementById('contenidoModal');
+
+  contenido.innerHTML = `
+    <div style="background:white; padding:30px; border-radius:15px; text-align:center;">
+      <h3 style="margin-bottom:20px;">🔊 Audio del Reporte</h3>
+      <audio controls autoplay style="width:100%; max-width:400px;">
+        <source src="${url}" type="audio/mpeg">
+        <source src="${url}" type="audio/ogg">
+        Tu navegador no soporta audio.
+      </audio>
+    </div>
+  `;
+  modal.style.display = 'flex';
+}
+
+function cerrarModal() {
+  document.getElementById('modalMedia').style.display = 'none';
+}
+
+function actualizarHora() {
+  const ahora = new Date();
+
+  const fecha = ahora.toLocaleDateString('es-AR');
+  const hora = ahora.toLocaleTimeString('es-AR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false   // 👈 24 HORAS
+  });
+
+  document.getElementById('horaActual').innerHTML = `🕒 ${fecha} ${hora}`;
+}
+
+// actualizar cada segundo
+setInterval(actualizarHora, 1000);
+actualizarHora();
+
+function exportarExcel() {
+  let csv = "Fecha;Hora;Animal;Descripción;Reportante;Teléfono;Prioridad;Estado;Lat;Lon\n";
+
+  reportesMostrados.forEach(r => {
+
+    const fechaObj = new Date(r.fecha);
+
+    const fecha = fechaObj.toLocaleDateString('es-AR');
+
+    const hora = fechaObj.toLocaleTimeString('es-AR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+
+    const nombre = r.nombre_reportante || "Sin nombre";
+
+    csv += `${fecha};${hora};${r.tipo_animal};${r.descripcion};${nombre};${r.telefono};${r.urgencia};${r.estado};${r.lat};${r.lon}\n`;
+  });
+
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+
+  // 🔥 NOMBRE CON FECHA Y HORA
+  const ahora = new Date();
+
+  const fechaArchivo = ahora.toLocaleDateString('es-AR').replace(/\//g, '-');
+
+  const horaArchivo = ahora.toLocaleTimeString('es-AR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  }).replace(/:/g, '-');
+
+  a.download = `reportes_${fechaArchivo}_${horaArchivo}.csv`;
+
+  a.click();
+}
 
 </script>
+
+<!-- MODAL FOTO / VIDEO -->
+<div id="modalMedia" style="
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.8);
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+">
+  <div style="position:relative; max-width:90%; max-height:90%;">
+    <span onclick="cerrarModal()" style="
+      position:absolute;
+      top:-30px;
+      right:0;
+      color:white;
+      font-size:30px;
+      cursor:pointer;
+    ">✖</span>
+
+    <div id="contenidoModal"></div>
+  </div>
+</div>
 
 </body>
 </html>
