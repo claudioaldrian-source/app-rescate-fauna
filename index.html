@@ -643,6 +643,10 @@ if (error) {
   alert(JSON.stringify(error));
   return;
 }
+
+
+
+
     // ============================================
     // ÉXITO
     // ============================================
@@ -695,6 +699,49 @@ async function grabarAudio() {
     mediaRecorder.stop();
   }, 5000);
 }
+
+function mostrarMensajeRecibido() {
+  const cartel = document.createElement("div");
+
+  cartel.innerHTML = "✅ Reporte recibido por Guardafauna";
+  cartel.style.position = "fixed";
+  cartel.style.bottom = "20px";
+  cartel.style.left = "50%";
+  cartel.style.transform = "translateX(-50%)";
+  cartel.style.background = "#4CAF50";
+  cartel.style.color = "white";
+  cartel.style.padding = "12px 20px";
+  cartel.style.borderRadius = "10px";
+  cartel.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
+  cartel.style.zIndex = "9999";
+
+  document.body.appendChild(cartel);
+
+  setTimeout(() => {
+    cartel.remove();
+  }, 4000);
+}
+
+supabaseClient
+  .channel('realtime-reportes')
+  .on(
+    'postgres_changes',
+    {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'reportes-fauna'
+    },
+    (payload) => {
+      console.log("Cambio recibido:", payload);
+
+      const nuevoEstado = payload.new.estado;
+
+      if (nuevoEstado === 'recibido') {
+        mostrarMensajeRecibido();
+      }
+    }
+  )
+  .subscribe();
 
 </script>
 
