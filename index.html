@@ -252,12 +252,12 @@
 }
 
 .logo {
-  height: 85px;
+  height: 90px;
   width: auto;
 }
 
 .logo2 {
-  height: 110px;
+  height: 95px;
   width: auto;
 }
 
@@ -709,23 +709,35 @@ async function grabarAudio() {
 function mostrarMensajeRecibido() {
   const cartel = document.createElement("div");
 
-  cartel.innerHTML = "✅ Reporte recibido por Guardafauna";
+  cartel.innerHTML = `
+    <div style="font-size:22px; margin-bottom:5px;">✅</div>
+    <div>Tu reporte fue respondido</div>
+  `;
+
   cartel.style.position = "fixed";
-  cartel.style.bottom = "20px";
+  cartel.style.top = "30%";
   cartel.style.left = "50%";
-  cartel.style.transform = "translateX(-50%)";
+  cartel.style.transform = "translate(-50%, -50%)";
   cartel.style.background = "#4CAF50";
   cartel.style.color = "white";
-  cartel.style.padding = "12px 20px";
-  cartel.style.borderRadius = "10px";
-  cartel.style.boxShadow = "0 5px 15px rgba(0,0,0,0.2)";
+  cartel.style.padding = "20px 30px";
+  cartel.style.borderRadius = "15px";
+  cartel.style.fontSize = "18px";
+  cartel.style.fontWeight = "bold";
+  cartel.style.boxShadow = "0 8px 25px rgba(0,0,0,0.3)";
   cartel.style.zIndex = "9999";
+  cartel.style.textAlign = "center";
 
   document.body.appendChild(cartel);
 
   setTimeout(() => {
-    cartel.remove();
-  }, 4000);
+    cartel.style.opacity = "0";
+    cartel.style.transition = "opacity 0.5s";
+    
+    setTimeout(() => {
+      cartel.remove();
+    }, 500);
+  }, 5000); // 👈 ahora dura 5 segundos
 }
 
 supabaseClient
@@ -742,9 +754,13 @@ supabaseClient
 
       const nuevoEstado = payload.new.estado;
 
-      if (nuevoEstado === 'recibido') {
-        mostrarMensajeRecibido();
-      }
+// 👇 ESTE ES EL CONTROL
+      console.log("Estado recibido:", nuevoEstado);
+
+if (nuevoEstado === 'en-proceso') {
+  console.log("🔥 MENSAJE RECIBIDO");
+  mostrarMensajeRecibido();
+}
     }
   )
   .subscribe();
