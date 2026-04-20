@@ -788,11 +788,18 @@ console.log("ID guardado:", idReporte);
     
     // Limpiar formulario
     document.getElementById('reporteForm').reset();
+    const btn = document.querySelector('.btn-audio');
+btn.textContent = "🎤 Grabar Audio (OPCIONAL)";
+btn.style.background = "#4CAF50";
+
     document.getElementById('mediaPreview').style.display = 'none';
     document.getElementById('ubicacionInfo').style.display = 'none';
     lat = null;
     lon = null;
+   
+    if (mediaType !== 'audio') {
     mediaFile = null;
+    }
 
   } catch (error) {
     console.error('Error:', error);
@@ -833,8 +840,10 @@ async function grabarAudio() {
       mediaType = 'audio';
 
       // Preview opcional
-      const url = URL.createObjectURL(audioBlob);
       const preview = document.getElementById('mediaPreview');
+
+      const url = URL.createObjectURL(audioBlob);
+      
       preview.innerHTML = `<audio controls src="${url}"></audio>`;
       preview.style.display = 'block';
 
