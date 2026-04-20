@@ -493,7 +493,7 @@
   </div>
 
   <!-- INPUT OCULTO -->
-  <input type="file" id="mediaInput" accept="image/*" capture="environment" style="display:none;">
+  <input type="file" id="mediaInput" style="display:none;">
 
 
   <!-- PREVIEW -->
@@ -562,17 +562,17 @@ mediaFile = null;
     // Definir tipo
     if (mediaType === 'foto') {
   input.accept = 'image/*';
-  input.setAttribute('capture'); // permite cámara y galeria
+  input.removeAttribute('capture'); // ✔ permite cámara + galería
 } else {
   input.accept = 'video/*';
-  input.removeAttribute('capture'); // evita conflicto
+  input.removeAttribute('capture');
 }
 
     // 🔥 ABRIR CÁMARA / ARCHIVO DIRECTO
     input.click();
 
     // Limpiar preview anterior
-   const preview = document.getElementById('audioPreview');
+   const preview = document.getElementById('mediaPreview');
 
 // SOLO limpiar si NO hay audio cargado
 if (!mediaFile || mediaType !== 'audio') {
