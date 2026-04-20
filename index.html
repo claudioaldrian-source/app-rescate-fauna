@@ -450,6 +450,7 @@
   <button type="button" class="btn-audio" onclick="grabarAudio()">
     🎤 Grabar Audio (OPCIONAL)
   </button>
+<div id="audioPreview" style="margin-top:5px;"></div>
 
       </div>
  </div>
@@ -561,7 +562,7 @@ mediaFile = null;
     // Definir tipo
     if (mediaType === 'foto') {
   input.accept = 'image/*';
-  input.setAttribute('capture', 'environment'); // fuerza cámara foto
+  input.setAttribute('capture'); // permite cámara y galeria
 } else {
   input.accept = 'video/*';
   input.removeAttribute('capture'); // evita conflicto
@@ -571,7 +572,7 @@ mediaFile = null;
     input.click();
 
     // Limpiar preview anterior
-   const preview = document.getElementById('mediaPreview');
+   const preview = document.getElementById('audioPreview');
 
 // SOLO limpiar si NO hay audio cargado
 if (!mediaFile || mediaType !== 'audio') {
@@ -808,6 +809,7 @@ console.log("ID guardado:", idReporte);
       // Limpiar formulario
 	document.getElementById('reporteForm').reset();
 	document.getElementById('mediaPreview').style.display = 'none';
+document.getElementById('audioPreview').innerHTML = '';
 	document.getElementById('ubicacionInfo').style.display = 'none';
 	lat = null;
 	lon = null;
@@ -867,9 +869,6 @@ async function grabarAudio() {
       preview.innerHTML = `<audio controls src="${url}"></audio>`;
       preview.style.display = 'block';
 
-setTimeout(() => {
-  preview.style.display = 'none';
-}, 5000);
 
       btn.textContent = "✅ Audio listo";
       btn.style.background = "#4CAF50";
