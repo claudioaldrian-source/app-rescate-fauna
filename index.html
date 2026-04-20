@@ -445,9 +445,7 @@
   
   <textarea 
     id="descripcion"
-    placeholder="Ej: Víboras en el patio trasero..."
-    required
-  ></textarea>
+    placeholder="Ej: Víboras en el patio trasero..."></textarea>
 
   <button type="button" class="btn-audio" onclick="grabarAudio()">
     🎤 Grabar Audio (OPCIONAL)
@@ -800,33 +798,48 @@ console.log("ID guardado:", idReporte);
 
 let mediaRecorder;
 let audioChunks = [];
+let grabando = false;
 
 async function grabarAudio() {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const btn = document.querySelector('.btn-audio');
 
-  mediaRecorder = new MediaRecorder(stream);
-  audioChunks = [];
+  if (!grabando) {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-  mediaRecorder.start();
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
 
-  alert("🎤 Grabando audio...");
+    mediaRecorder.start();
+    grabando = true;
 
-  mediaRecorder.ondataavailable = e => {
-    audioChunks.push(e.data);
-  };
+    btn.textContent = "⏹️ Detener grabación";
+    btn.style.background = "#e53935";
 
-  mediaRecorder.onstop = () => {
-    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+    mediaRecorder.ondataavailable = e => {
+      audioChunks.push(e.data);
+    };
 
-    mediaFile = audioBlob;
-    mediaType = 'audio';
+    mediaRecorder.onstop = () => {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
 
-    alert("✅ Audio listo");
-  };
+      mediaFile = audioBlob;
+      mediaType = 'audio';
 
-  setTimeout(() => {
+      // Preview opcional
+      const url = URL.createObjectURL(audioBlob);
+      const preview = document.getElementById('mediaPreview');
+      preview.innerHTML = `<audio controls src="${url}"></audio>`;
+      preview.style.display = 'block';
+
+      btn.textContent = "✅ Audio listo";
+      btn.style.background = "#4CAF50";
+
+      grabando = false;
+    };
+
+  } else {
     mediaRecorder.stop();
-  }, 5000);
+  }
 }
 
 function mostrarMensajeRecibido() {
@@ -896,6 +909,13 @@ supabaseClient
 }
   )
   .subscribe();
+
+const descripcion = document.getElementById('descripcion').value;
+
+if (!descripcion && !mediaFile) {
+  mostrarAlerta('⚠️ Escribí una descripción o grabá un audio', 'error');
+  return;
+}
 
 </script>
 
