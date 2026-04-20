@@ -492,7 +492,7 @@
   </div>
 
   <!-- INPUT OCULTO -->
-  <input type="file" id="mediaInput" style="display:none;">
+  <input type="file" id="mediaInput" accept="image/*" capture="environment" style="display:none;">
 
 
   <!-- PREVIEW -->
@@ -553,18 +553,19 @@ document.querySelectorAll('.media-type-btn').forEach(btn => {
     document.querySelectorAll('.media-type-btn').forEach(b => b.classList.remove('active'));
     this.classList.add('active');
 
-    if (mediaType !== 'audio') {
-  mediaType = this.dataset.type;
-}
+    mediaType = this.dataset.type;
+mediaFile = null;
 
     const input = document.getElementById('mediaInput');
 
     // Definir tipo
     if (mediaType === 'foto') {
-      input.accept = 'image/*';
-    } else {
-      input.accept = 'video/*';
-    }
+  input.accept = 'image/*';
+  input.setAttribute('capture', 'environment'); // fuerza cámara foto
+} else {
+  input.accept = 'video/*';
+  input.removeAttribute('capture'); // evita conflicto
+}
 
     // 🔥 ABRIR CÁMARA / ARCHIVO DIRECTO
     input.click();
