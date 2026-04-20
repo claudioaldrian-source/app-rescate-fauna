@@ -567,11 +567,11 @@ document.querySelectorAll('.media-type-btn').forEach(btn => {
     input.click();
 
     // Limpiar preview anterior
-    const preview = document.getElementById('mediaPreview');
-    preview.style.display = 'none';
-    preview.innerHTML = '';
-
-    mediaFile = null;
+    if (mediaType !== 'audio') {
+  preview.style.display = 'none';
+  preview.innerHTML = '';
+  mediaFile = null;
+}
 
   });
 });
@@ -689,6 +689,13 @@ function mostrarAlerta(mensaje, tipo) {
 // ============================================
 document.getElementById('reporteForm').addEventListener('submit', async function(e) {
   e.preventDefault();
+
+const descripcion = document.getElementById('descripcion').value;
+
+if (!descripcion && !mediaFile) {
+  mostrarAlerta('⚠️ Escribí una descripción o grabá un audio', 'error');
+  return;
+}
 
   // Validaciones
   if (!lat || !lon) {
@@ -910,12 +917,7 @@ supabaseClient
   )
   .subscribe();
 
-const descripcion = document.getElementById('descripcion').value;
 
-if (!descripcion && !mediaFile) {
-  mostrarAlerta('⚠️ Escribí una descripción o grabá un audio', 'error');
-  return;
-}
 
 </script>
 
