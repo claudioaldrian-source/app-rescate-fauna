@@ -552,7 +552,9 @@ document.querySelectorAll('.media-type-btn').forEach(btn => {
     document.querySelectorAll('.media-type-btn').forEach(b => b.classList.remove('active'));
     this.classList.add('active');
 
-    mediaType = this.dataset.type;
+    if (mediaType !== 'audio') {
+  mediaType = this.dataset.type;
+}
 
     const input = document.getElementById('mediaInput');
 
@@ -567,7 +569,10 @@ document.querySelectorAll('.media-type-btn').forEach(btn => {
     input.click();
 
     // Limpiar preview anterior
-    if (mediaType !== 'audio') {
+   const preview = document.getElementById('mediaPreview');
+
+// SOLO limpiar si NO hay audio cargado
+if (!mediaFile || mediaType !== 'audio') {
   preview.style.display = 'none';
   preview.innerHTML = '';
   mediaFile = null;
@@ -716,6 +721,7 @@ if (!descripcion && !mediaFile) {
     // SUBIR FOTO/VIDEO SI HAY
     // ============================================
     if (mediaFile) {
+    console.log("SUBIENDO:", mediaType, mediaFile);
   const timestamp = Date.now();
 
   let extension;
@@ -788,6 +794,10 @@ console.log("ID guardado:", idReporte);
     
     // Limpiar formulario
     document.getElementById('reporteForm').reset();
+
+mediaFile = null;
+mediaType = 'foto';
+
     const btn = document.querySelector('.btn-audio');
 btn.textContent = "🎤 Grabar Audio (OPCIONAL)";
 btn.style.background = "#4CAF50";
@@ -797,10 +807,7 @@ btn.style.background = "#4CAF50";
     lat = null;
     lon = null;
    
-    if (mediaType !== 'audio') {
-    mediaFile = null;
-    }
-
+    
   } catch (error) {
     console.error('Error:', error);
     mostrarAlerta('❌ Error al enviar: ' + error.message, 'error');
