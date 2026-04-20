@@ -109,8 +109,8 @@
     }
 
     .media-preview {
-      margin-top: 15px;
-      border-radius: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
       overflow: hidden;
       display: none;
     }
@@ -697,7 +697,7 @@ document.getElementById('reporteForm').addEventListener('submit', async function
 
 const descripcion = document.getElementById('descripcion').value;
 
-if (!descripcion && !mediaFile) {
+if (!descripcion && !mediaFile && mediaType !== 'audio') {
   mostrarAlerta('⚠️ Escribí una descripción o grabá un audio', 'error');
   return;
 }
@@ -720,7 +720,8 @@ if (!descripcion && !mediaFile) {
     // ============================================
     // SUBIR FOTO/VIDEO SI HAY
     // ============================================
-    if (mediaFile) {
+    // SUBIR FOTO/VIDEO/AUDIO SI HAY
+if (mediaFile || mediaType === 'audio') {
     console.log("SUBIENDO:", mediaType, mediaFile);
   const timestamp = Date.now();
 
@@ -729,11 +730,13 @@ if (!descripcion && !mediaFile) {
   if (mediaType === 'audio') {
     extension = 'webm';
   } else {
-    extension = mediaFile.name.split('.').pop();
+    extension = mediaFile?.name ? mediaFile.name.split('.').pop() : 'webm';
   }
 
   const fileName = `${mediaType}_${timestamp}.${extension}`;
   const filePath = `reportes/${fileName}`;
+
+console.log("SUBIENDO:", mediaType, mediaFile);
 
       const { data: uploadData, error: uploadError } = await supabaseClient.storage
         .from('fauna-media')
@@ -764,7 +767,7 @@ const { data, error } = await supabaseClient
       lat: lat,
       lon: lon,
       media_url: mediaUrl,
-      media_tipo: mediaFile ? mediaType : null,
+      media_tipo: mediaType || null,
       estado: 'pendiente',
       fecha: new Date().toISOString()
     }
@@ -853,6 +856,10 @@ async function grabarAudio() {
       
       preview.innerHTML = `<audio controls src="${url}"></audio>`;
       preview.style.display = 'block';
+
+setTimeout(() => {
+  preview.style.display = 'none';
+}, 5000);
 
       btn.textContent = "✅ Audio listo";
       btn.style.background = "#4CAF50";
