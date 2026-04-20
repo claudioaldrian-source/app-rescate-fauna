@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🐍 Reporte de Fauna - Guardafauna Jaauka</title>
+  <title>🐍 Reporte de Fauna Santa Fe</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -16,13 +16,14 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      padding: 20px;
+      padding: 10px;
     }
 
     .container {
-      max-width: 500px;
-      margin: 0 auto;
-    }
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
 
     h1 {
       color: white;
@@ -34,18 +35,18 @@
 
     .card {
       background: white;
-      padding: 10px;
+      padding: 8px;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
     .form-group {
-      margin-bottom: 5px;
+      margin-bottom: 4px;
     }
 
     label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       color: #333;
       font-weight: 600;
       font-size: 14px;
@@ -248,7 +249,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
 }
 
 .logo {
@@ -257,8 +258,8 @@
 }
 
 .logo2 {
-  height: 95px;
-  width: auto;
+  height: 70px;
+  flex-shrink: 0;
 }
 
 @media (max-width: 600px) {
@@ -271,6 +272,15 @@
   text-align: center;
   flex: 1;
   color: white;
+}
+
+.header-text h1 {
+  font-size: 18px;
+  margin-bottom: 3px;
+}
+
+.header-text p {
+  font-size: 12px;
 }
 
 .btn-audio {
@@ -288,6 +298,97 @@
   text-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
+.descripcion-con-audio {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.descripcion-con-audio textarea {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  resize: none;
+  min-height: 80px;
+}
+
+.btn-audio {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  min-width: 70px;
+  display: flex;
+  height: auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-audio:hover {
+  background: #43a047;
+}
+
+@media (max-width: 600px) {
+
+  .descripcion-con-audio {
+    flex-direction: column;
+  }
+
+  .btn-audio {
+    width: 100%;
+  }
+}
+
+.urgencia-muerto {
+  background: #eeeeee;
+  color: #000;
+}
+
+.logo-banner-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  width: 100%;              /* 👈 ocupa todo el ancho */
+}
+
+/* BANNER */
+.mini-banner {
+  flex: 1;
+  height: 60px;
+  min-height: 60px;
+  background: white;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 600px) {
+
+  .logo-banner-row {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .logo2 {
+    height: 55px;
+  }
+
+  .mini-banner {
+    width: 100%;
+    height: 50px;
+  }
+
+}
+
   </style>
 </head>
 <body>
@@ -295,19 +396,28 @@
   <div class="container">
 
 <div class="header">
-  <img src="logo-jauka.png" class="logo2">
+
 
   <div class="header-text">
-    <h1 class="titulo-principal">Reporte Guardafauna</h1>
-<h1 class="titulo-principal">🐍🦊 Santa Fe 🐢🦅</h1>
-    <p>Sistema sincronizado por Macla-IA</p>
-    <p>de Claudio ALDRIAN</p>
-  </div>
-
-  <img src="logo_macla.png" class="logo">
+    <h1 class="titulo-principal">Reporte Fauna Santa Fe</h1>
+    <p>Sincronizado por Macla-IA de Claudio ALDRIAN</p>
+   </div>
 </div>
 
-    <div class="card">
+  <!-- ESPACIO PARA BANNER -LOGO -->
+  <div class="logo-banner-row">
+
+  <img src="logo-santafe.png" class="logo2">
+
+  <div class="mini-banner">
+    PUBLICIDAD
+  </div>
+
+</div>
+
+  
+
+   <div class="card">
       
       <div id="alert" class="alert"></div>
 
@@ -319,29 +429,33 @@
           <select id="tipoAnimal" required>
             <option value="">Seleccioná una opción</option>
             <option value="reptiles">🐍 Reptiles</option>
-            <option value="artropodos">🦎 Artrópodos / Insectos</option>
+            <option value="artropodos">🐞 Insectos/Artrópodos</option>
             <option value="anfibios">🐢 Anfibios</option>
             <option value="aves">🦅 Aves</option>
             <option value="mamiferos">🦊 Mamíferos</option>
-            <option value="otro">❓ Otro</option>
+            <option value="otro">🚫🐾 Animal muerto</option>
           </select>
         </div>
 
         <!-- Descripción -->
-        <div class="form-group">
+     <div class="form-group">
           <label>📝 Descripción del avistamiento</label>
-          <textarea 
-            id="descripcion" 
-            placeholder="Ej: Víbora de coral en el patio trasero, aproximadamente 1 metro..."
-            required
-          ></textarea>
-        </div>
 
-<div class="form-group">
-  <button type="button" class="btn btn-audio" onclick="grabarAudio()">
-    🎤 Grabar Audio
+<div class="descripcion-con-audio">
+  
+  <textarea 
+    id="descripcion"
+    placeholder="Ej: Víboras en el patio trasero..."
+    required
+  ></textarea>
+
+  <button type="button" class="btn-audio" onclick="grabarAudio()">
+    🎤 Grabar Audio (OPCIONAL)
   </button>
-</div>
+
+      </div>
+ </div>
+
 
         <!-- Nivel de urgencia -->
         <div class="form-group">
@@ -350,23 +464,24 @@
             <option value="baja">🟢 Baja - Solo avistamiento</option>
             <option value="media">🟡 Media - Animal cerca de personas</option>
             <option value="alta">🔴 Alta - Situación de riesgo</option>
+           <option value="muerto">⚫ Animal Muerto</option>
           </select>
         </div>
 
         <!-- Datos de contacto -->
         <div class="form-group">
-          <label>👤 Tu nombre (opcional)</label>
+          <label>👤 Tu nombre </label>
           <input type="text" id="nombre" placeholder="Nombre y apellido">
         </div>
 
         <div class="form-group">
-          <label>📱 Teléfono de contacto (opcional)</label>
+          <label>📱 Teléfono de contacto </label>
           <input type="tel" id="telefono" placeholder="Ej: 3482-123456">
         </div>
 
         <!-- Selector de tipo de media -->
 <div class="form-group">
-  <label>Pulsar abajo... <span class="optional-badge">ENVÍO OBLIGATORIO</span></label>
+  <label>SELECCIONAR... <span class="optional-badge">ENVÍO OBLIGATORIO</span></label>
 
   <!-- BOTONES FOTO / VIDEO -->
   <div class="media-type-selector">
@@ -642,13 +757,21 @@ const { data, error } = await supabaseClient
       estado: 'pendiente',
       fecha: new Date().toISOString()
     }
-  ]);
+  ])
+   .select(); // 👈 ESTO ES CLAVE;
 
 if (error) {
-  console.error("ERROR REAL:", error);
-  alert(JSON.stringify(error));
+  alert("Error al enviar reporte");
   return;
 }
+
+// 👇 AGARRA EL ID DEL REPORTE
+const idReporte = data[0].id;
+
+// 👇 LO GUARDA EN EL CELULAR
+localStorage.setItem("miReporteId", idReporte);
+
+console.log("ID guardado:", idReporte);
 
 
 
@@ -750,18 +873,27 @@ supabaseClient
       table: 'reportes-fauna'
     },
     (payload) => {
-      console.log("Cambio recibido:", payload);
 
-      const nuevoEstado = payload.new.estado;
+  const miId = localStorage.getItem("miReporteId");
 
-// 👇 ESTE ES EL CONTROL
-      console.log("Estado recibido:", nuevoEstado);
+  console.log("Mi ID:", miId);
+  console.log("ID que cambió:", payload.new.id);
 
-if (nuevoEstado === 'en-proceso') {
-  console.log("🔥 MENSAJE RECIBIDO");
-  mostrarMensajeRecibido();
+  // 👇 SI NO ES MI REPORTE → NO HACE NADA
+  if (payload.new.id != miId) return;
+
+  const nuevoEstado = payload.new.estado;
+
+  console.log("Estado recibido:", nuevoEstado);
+
+  if (
+    nuevoEstado &&
+    (nuevoEstado.toLowerCase() === 'recibido' ||
+     nuevoEstado.toLowerCase() === 'respondido')
+  ) {
+    mostrarMensajeRecibido();
+  }
 }
-    }
   )
   .subscribe();
 
