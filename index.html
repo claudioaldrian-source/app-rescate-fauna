@@ -540,6 +540,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 let lat = null;
 let lon = null;
 let mediaFile = null;
+let audioFile = null;  // ← NUEVA: archivo de audio separado
 let mediaType = 'foto'; // 'foto' o 'video'
 
 // ============================================
@@ -697,8 +698,8 @@ document.getElementById('reporteForm').addEventListener('submit', async function
 
 const descripcion = document.getElementById('descripcion').value;
 
-if (!descripcion && !mediaFile && mediaType !== 'audio') {
-  mostrarAlerta('⚠️ Escribí una descripción o grabá un audio', 'error');
+if (!descripcion && !mediaFile && !audioFile) {
+  mostrarAlerta('⚠️ Escribí una descripción, adjuntá foto/video o grabá audio', 'error');
   return;
 }
 
@@ -714,43 +715,53 @@ if (!descripcion && !mediaFile && mediaType !== 'audio') {
   btnSubmit.disabled = true;
   loading.style.display = 'block';
 
-  try {
-    let mediaUrl = null;
+  
+try {
+  let mediaUrl = null;
+  let audioUrl = null;
 
-    // ============================================
-    // SUBIR FOTO/VIDEO SI HAY
-    // ============================================
-    // SUBIR FOTO/VIDEO/AUDIO SI HAY
-if (mediaFile || mediaType === 'audio') {
-    console.log("SUBIENDO:", mediaType, mediaFile);
-  const timestamp = Date.now();
+  // ============================================
+  // SUBIR FOTO/VIDEO SI HAY
+  // ============================================
+  if (mediaFile) {
+    const timestamp = Date.now();
+    const extension = mediaFile.name.split('.').pop();
+    const fileName = `${mediaType}_${timestamp}.${extension}`;
+    const filePath = `reportes/${fileName}`;
 
-  let extension;
+    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+      .from('fauna-media')
+      .upload(filePath, mediaFile);
 
-  if (mediaType === 'audio') {
-    extension = 'webm';
-  } else {
-    extension = mediaFile?.name ? mediaFile.name.split('.').pop() : 'webm';
+    if (uploadError) throw uploadError;
+
+    const { data: urlData } = supabaseClient.storage
+      .from('fauna-media')
+      .getPublicUrl(filePath);
+
+    mediaUrl = urlData.publicUrl;
   }
 
-  const fileName = `${mediaType}_${timestamp}.${extension}`;
-  const filePath = `reportes/${fileName}`;
+  // ============================================
+  // SUBIR AUDIO SI HAY
+  // ============================================
+  if (audioFile) {
+    const timestamp = Date.now();
+    const fileName = `audio_${timestamp}.webm`;
+    const filePath = `reportes/${fileName}`;
 
-console.log("SUBIENDO:", mediaType, mediaFile);
+    const { data: uploadData, error: uploadError } = await supabaseClient.storage
+      .from('fauna-media')
+      .upload(filePath, audioFile);
 
-      const { data: uploadData, error: uploadError } = await supabaseClient.storage
-        .from('fauna-media')
-        .upload(filePath, mediaFile);
+    if (uploadError) throw uploadError;
 
-      if (uploadError) throw uploadError;
+    const { data: urlData } = supabaseClient.storage
+      .from('fauna-media')
+      .getPublicUrl(filePath);
 
-      // Obtener URL pública
-      const { data: urlData } = supabaseClient.storage
-        .from('fauna-media')
-        .getPublicUrl(filePath);
-
-      mediaUrl = urlData.publicUrl;
-    }
+    audioUrl = urlData.publicUrl;
+  }
 
     // ============================================
     // GUARDAR REPORTE EN LA BASE DE DATOS
@@ -767,6 +778,7 @@ const { data, error } = await supabaseClient
       lat: lat,
       lon: lon,
       media_url: mediaUrl,
+      audio_url: audioUrl,  // ← NUEVO CAMPO
       media_tipo: mediaType || null,
       estado: 'pendiente',
       fecha: new Date().toISOString()
@@ -787,28 +799,25 @@ localStorage.setItem("miReporteId", idReporte);
 
 console.log("ID guardado:", idReporte);
 
-
-
-
     // ============================================
     // ÉXITO
     // ============================================
     mostrarAlerta('✅ ¡Reporte enviado correctamente! Guardafauna lo recibirá pronto.', 'success');
     
-    // Limpiar formulario
-    document.getElementById('reporteForm').reset();
-
-mediaFile = null;
-mediaType = 'foto';
+      // Limpiar formulario
+	document.getElementById('reporteForm').reset();
+	document.getElementById('mediaPreview').style.display = 'none';
+	document.getElementById('ubicacionInfo').style.display = 'none';
+	lat = null;
+	lon = null;
+	mediaFile = null;
+	audioFile = null;  // ← Limpiar audio también
 
     const btn = document.querySelector('.btn-audio');
 btn.textContent = "🎤 Grabar Audio (OPCIONAL)";
 btn.style.background = "#4CAF50";
 
-    document.getElementById('mediaPreview').style.display = 'none';
-    document.getElementById('ubicacionInfo').style.display = 'none';
-    lat = null;
-    lon = null;
+    
    
     
   } catch (error) {
@@ -845,8 +854,8 @@ async function grabarAudio() {
 
     mediaRecorder.onstop = () => {
       const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-
-      mediaFile = audioBlob;
+      
+      audioFile = audioBlob;  // ← Guardar en variable separada
       mediaType = 'audio';
 
       // Preview opcional
