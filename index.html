@@ -46,7 +46,7 @@
 
     label {
       display: block;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       color: #333;
       font-weight: 600;
       font-size: 14px;
@@ -57,10 +57,10 @@
     textarea,
     select {
       width: 100%;
-      padding: 12px;
-      border: 2px solid #e0e0e0;
-      border-radius: 10px;
-      font-size: 14px;
+      padding: 7px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 16px;
       transition: border-color 0.3s;
     }
 
@@ -72,7 +72,7 @@
     }
 
     textarea {
-      min-height: 100px;
+      min-height: 60px;
       resize: vertical;
       font-family: inherit;
     }
@@ -109,7 +109,7 @@
     }
 
     .media-preview {
-      margin-top: 5px;
+      margin-top: 3px;
       border-radius: 8px;
       overflow: hidden;
       display: none;
@@ -119,15 +119,15 @@
     .media-preview video {
       width: 100%;
       display: block;
-      border-radius: 10px;
+      border-radius: 8px;
     }
 
     .btn {
       width: 100%;
       padding: 7px;
       border: none;
-      border-radius: 10px;
-      font-size: 16px;
+      border-radius: 8px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s;
@@ -137,6 +137,7 @@
     .btn-location {
       background: #FF9800;
       color: white;
+      margin-top: 3px !important;
     }
 
     .btn-location:hover {
@@ -164,9 +165,9 @@
 
     .ubicacion-info {
       background: #e8f5e9;
-      padding: 12px;
-      border-radius: 10px;
-      margin-top: 10px;
+      padding: 7px;
+      border-radius: 8px;
+      margin-top: 5px;
       display: none;
       font-size: 13px;
       color: #2e7d32;
@@ -215,12 +216,12 @@
     .media-type-selector {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 15px;
+      gap: 5px;
+      margin-bottom: 5px;
     }
 
     .media-type-btn {
-      padding: 10px;
+      padding: 7px;
       border: 2px solid #e0e0e0;
       background: white;
       border-radius: 10px;
@@ -283,16 +284,6 @@
   font-size: 12px;
 }
 
-.btn-audio {
-  background: #6c757d;
-  color: white;
-  font-size: 14px;
-  padding: 10px;
-}
-
-.btn-audio:hover {
-  background: #5a6268;
-}
 .titulo-principal {
   color: #A8E063;
   text-shadow: 0 1px 3px rgba(0,0,0,0.2);
@@ -306,30 +297,29 @@
 
 .descripcion-con-audio textarea {
   flex: 1;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 7px;
+  border-radius: 8px;
   border: 1px solid #ccc;
   resize: none;
-  min-height: 80px;
+  min-height: 70px;
 }
 
 .btn-audio {
-  background: #4CAF50;
+  background: #5a6268;
   color: white;
-  border: none;
-  padding: 8px 10px;
+  padding: 0px 6px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
   min-width: 70px;
   display: flex;
-  height: auto;
+  height: 30px;
   align-items: center;
   justify-content: center;
 }
 
 .btn-audio:hover {
-  background: #43a047;
+  background: #5a6268;
 }
 
 @media (max-width: 600px) {
@@ -389,6 +379,43 @@
 
 }
 
+.fila-descripcion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.fila-descripcion label {
+  display: inline-block; /* 👈 IMPORTANTE */
+  margin: 0;
+}
+
+.alerta-bottom {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  background: #4CAF50;
+  color: white;
+  padding: 14px 18px;
+  border-radius: 10px;
+  
+  font-size: 14px;
+  text-align: center;
+  
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 9999;
+
+  opacity: 1;
+  transition: all 0.4s ease;
+}
+
+.alerta-bottom.ocultar {
+  opacity: 0;
+  transform: translateX(-50%) translateY(20px);
+}
+
   </style>
 </head>
 <body>
@@ -416,7 +443,6 @@
 </div>
 
   
-
    <div class="card">
       
       <div id="alert" class="alert"></div>
@@ -437,24 +463,21 @@
           </select>
         </div>
 
-        <!-- Descripción -->
-     <div class="form-group">
-          <label>📝 Descripción del avistamiento</label>
+      <div class="form-group">
 
-<div class="descripcion-con-audio">
-  
-  <textarea 
-    id="descripcion"
-    placeholder="Ej: Víboras en el patio trasero..."></textarea>
+  <div class="fila-descripcion">
+    <label>📝 Descripción del avistamiento</label>
 
-  <button type="button" class="btn-audio" onclick="grabarAudio()">
-    🎤 Grabar Audio (OPCIONAL)
-  </button>
-<div id="audioPreview" style="margin-top:5px;"></div>
+    <button type="button" class="btn-audio" onclick="grabarAudio()">
+      🎤 Grabar Audio (OPCIONAL)
+    </button>
+  </div>
 
-      </div>
- </div>
+  <textarea id="descripcion" placeholder="Ej: Víboras en el patio trasero..."></textarea>
 
+  <div id="audioPreview"></div>
+
+</div>
 
         <!-- Nivel de urgencia -->
         <div class="form-group">
@@ -480,7 +503,7 @@
 
         <!-- Selector de tipo de media -->
 <div class="form-group">
-  <label>SELECCIONAR... <span class="optional-badge">ENVÍO OBLIGATORIO</span></label>
+  <label>Seleccionar... <span class="optional-badge">ENVÍO OBLIGATORIO</span></label>
 
   <!-- BOTONES FOTO / VIDEO -->
   <div class="media-type-selector">
@@ -681,15 +704,19 @@ function obtenerUbicacion(){
 // ============================================
 // MOSTRAR ALERTAS
 // ============================================
-function mostrarAlerta(mensaje, tipo) {
-  const alert = document.getElementById('alert');
-  alert.className = `alert alert-${tipo}`;
-  alert.textContent = mensaje;
-  alert.style.display = 'block';
-  
+function mostrarAlerta(mensaje, tipo = 'success') {
+
+  const alerta = document.createElement('div');
+  alerta.textContent = mensaje;
+
+  alerta.className = `alerta-bottom ${tipo}`;
+
+  document.body.appendChild(alerta);
+
   setTimeout(() => {
-    alert.style.display = 'none';
-  }, 5000);
+    alerta.classList.add('ocultar');
+    setTimeout(() => alerta.remove(), 500);
+  }, 10000);
 }
 
 // ============================================
@@ -862,7 +889,7 @@ async function grabarAudio() {
       mediaType = 'audio';
 
       // Preview opcional
-      const preview = document.getElementById('mediaPreview');
+      const preview = document.getElementById('audioPreview');
 
       const url = URL.createObjectURL(audioBlob);
       
