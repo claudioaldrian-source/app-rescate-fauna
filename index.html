@@ -958,25 +958,21 @@ supabaseClient
   console.log("Mi ID:", miId);
   console.log("ID que cambió:", payload.new.id);
 
-  // 👇 SI NO ES MI REPORTE → NO HACE NADA
-  if (payload.new.id != miId) return;
+  // 👉 SI NO ES MI REPORTE → NO HACE NADA
+      if (!miId || payload.new.id != miId) return;
 
   const nuevoEstado = payload.new.estado;
 
   console.log("Estado recibido:", nuevoEstado);
 
-  if (
-    nuevoEstado &&
-    (nuevoEstado.toLowerCase() === 'recibido' ||
-     nuevoEstado.toLowerCase() === 'respondido')
-  ) {
-    mostrarMensajeRecibido();
-  }
-}
+  // 🔥 ESTA ES LA CLAVE
+      if (nuevoEstado === 'en-proceso') {
+        mostrarMensajeRecibido();
+      }
+
+    }
   )
   .subscribe();
-
-
 
 </script>
 

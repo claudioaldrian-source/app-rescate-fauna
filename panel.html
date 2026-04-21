@@ -841,7 +841,7 @@
   <div class="header-title">
     <h1>Panel de Reportes</h1>
 <h1>Fauna Santa Fe</h1>
-    <p>Sistema de gestionado por Macla-IA</p>
+    <p>Sistema gestionado por Macla-IA</p>
   </div>
 
   <!-- LOGO DERECHO -->
@@ -1328,14 +1328,16 @@ async function cambiarEstado(id, nuevoEstado) {
   try {
     const { error } = await supabaseClient
       .from('reportes-fauna')
-      .update({ estado: nuevoEstado })
+      .update({ 
+        estado: nuevoEstado,
+        fecha: new Date().toISOString() // 👈 IMPORTANTE
+      })
       .eq('id', id);
 
     if (error) throw error;
 
     cargarReportes();
 
-    // La actualización en tiempo real se encargará de recargar
   } catch (error) {
     alert('Error al actualizar estado: ' + error.message);
   }
