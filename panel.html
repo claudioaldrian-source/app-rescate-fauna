@@ -515,20 +515,18 @@
 
 
 .logo-right {
-  position: absolute;
-  right: 720px;
-  height: 60px; /* 👈 un poco más chico queda mejor */
+  
+  height: 90px; /* 👈 un poco más chico queda mejor */
   width: auto;
   object-fit: contain;
 }
 
 .logo-left {
-  position: absolute;
   left: 45px;
   height: 100px;
   width: auto; 
   object-fit: contain;
-  filter: brightness(1.3) contrast(1.2);
+  filter: brightness(1.5) contrast(1.3);
 }
 
 /* HEADER COMPLETO */
@@ -797,6 +795,176 @@
 
  }
 
+/* ============================================ */
+/* VISOR MULTIMEDIA */
+/* ============================================ */
+
+.visor-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.9);
+  z-index: 9999;
+
+  justify-content: center;
+  align-items: center;
+}
+
+#contenidoVisor {
+  max-width: 90%;
+  max-height: 90%;
+  text-align: center;
+}
+
+#contenidoVisor img,
+#contenidoVisor video {
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: 10px;
+  cursor: grab;
+}
+
+#contenidoVisor audio {
+  width: 400px;
+  max-width: 90%;
+}
+
+.cerrar {
+  position: fixed;
+  top: 20px;
+  right: 25px;
+
+  background: rgba(0,0,0,0.7);
+  color: white;
+
+  font-size: 24px;
+  padding: 8px 12px;
+
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.visor-modal img {
+  max-width: 90%;
+  max-height: 80%;
+  border-radius: 10px;
+  cursor: grab;
+  transition: transform 0.2s;
+}
+
+
+
+.tabla-scroll {
+  height: calc(100vh - 220px);
+  overflow-y: auto;
+  margin: 5px;
+}
+
+#tablaReportes {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  font-size: 12px;
+  table-layout: fixed;
+}
+
+#tablaReportes thead th {
+  position: sticky;
+  top: 0;
+  background: #2e7d32;
+  color: white;
+  padding: 6px;
+  text-align: left;
+}
+
+#tablaReportes td {
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: top;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+#tablaReportes tr:hover {
+  background: #f5f5f5;
+}
+
+/* ANCHOS DE COLUMNAS */
+
+#tablaReportes th:nth-child(1),
+#tablaReportes td:nth-child(1) {
+  width: 60px;
+}
+
+#tablaReportes th:nth-child(8),
+#tablaReportes td:nth-child(8) {
+  width: 240px;
+}
+
+#tablaReportes th:nth-child(9),
+#tablaReportes td:nth-child(9) {
+  width: 160px;
+}
+
+#tablaReportes th:nth-child(10),
+#tablaReportes td:nth-child(10) {
+  width: 100px;
+}
+
+#tablaReportes th:nth-child(11),
+#tablaReportes td:nth-child(11) {
+  width: 120px;
+}
+
+#tablaReportes th:nth-child(12),
+#tablaReportes td:nth-child(12) {
+  width: 120px;
+}
+
+.badge-estado {
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: bold;
+}
+
+.estado-pendiente { background:#ffcdd2; color:#b71c1c; }
+.estado-en-proceso { background:#ffe0b2; color:#e65100; }
+.estado-completado { background:#c8e6c9; color:#2e7d32; }
+
+.badge-urgencia {
+  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.urgencia-alta { background:#ff5252; color:white; }
+.urgencia-media { background:#ffeb3b; color:black; }
+.urgencia-baja { background:#4caf50; color:white; }
+
+.btn-mini-tabla {
+  padding: 4px 6px;
+  font-size: 11px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.desc-corta {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+
+  line-height: 1.3;
+  cursor: pointer;
+}
+
   </style>
 </head>
 <body>
@@ -814,6 +982,15 @@
       <h2>Panel Reporte de Fauna</h2>
       <div id="loginError" class="login-error"></div>
       <form id="loginForm">
+
+<input 
+  type="email"
+  id="emailInput"
+  class="login-input"
+  placeholder="📧 Correo electrónico"
+  required
+>
+
         <input 
           type="password" 
           id="passwordInput" 
@@ -989,14 +1166,34 @@
     </div>
 
     <!-- LISTA DE REPORTES -->
-    <div class="reportes-container" id="reportesContainer">
-      <div class="no-reportes">
-        <div class="no-reportes-icon">🔄</div>
-        <p>Cargando reportes...</p>
-      </div>
-    </div>
+    <div class="tabla-scroll">
+  <table id="tablaReportes">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Tiempo</th>
+        <th>Estado</th>
+        <th>Urgencia</th>
+        <th>Animal</th>
+        <th>Descripción</th>
+        <th>Ubicación</th>
+        <th>Zona</th>
+        <th>Reportante</th>
+        <th>Teléfono</th>
+        <th>Multimedia</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
 
-  </div>
+    <tbody id="tbodyReportes">
+      <tr>
+        <td colspan="14" style="text-align:center">Cargando reportes...</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -1010,35 +1207,49 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ============================================
-// CONFIGURACIÓN DE SEGURIDAD
-// ============================================
-const PASSWORD_CORRECTA = '20'; // ⚠️ CAMBIÁ ESTA CONTRASEÑA
-
-// ============================================
 // VARIABLES GLOBALES
 // ============================================
 let todosLosReportes = [];
 let reportesMostrados = [];
+let ultimoTotalReportes = 0;
+
+const sonidoNuevoReporte = new Audio('alerta.mp3');
 
 // ============================================
 // LOGIN
 // ============================================
-document.getElementById('loginForm').addEventListener('submit', function(e) {
+loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  
-  const password = document.getElementById('passwordInput').value;
-  
-  if (password === PASSWORD_CORRECTA) {
-    sessionStorage.setItem('guardafauna_logged_in', 'true');
-    mostrarPanel();
-  } else {
-    const errorDiv = document.getElementById('loginError');
-    errorDiv.textContent = '❌ Contraseña incorrecta';
-    errorDiv.style.display = 'block';
-    
-    setTimeout(() => {
-      errorDiv.style.display = 'none';
-    }, 3000);
+
+  const email = document.getElementById('emailInput').value.trim();
+  const password = passwordInput.value.trim();
+
+  loginError.textContent = '';
+
+  try {
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    if (error) {
+      loginError.textContent = '❌ Email o contraseña incorrectos';
+      return;
+    }
+
+    loginScreen.style.display = 'none';
+    panelScreen.style.display = 'block';
+
+    cargarReportes();
+
+  } catch (err) {
+
+    console.error(err);
+
+    loginError.textContent =
+      '❌ Error de conexión con Supabase';
+
   }
 });
 
@@ -1079,23 +1290,34 @@ async function cargarReportes() {
     const { data, error } = await supabaseClient
       .from('reportes-fauna')
       .select('*')
-      .order('fecha', { ascending: false });
+      .order('id', { ascending: false });
 
     if (error) throw error;
 
     todosLosReportes = data || [];
+// 🔔 detectar reporte nuevo
+
+if (ultimoTotalReportes > 0 &&
+    todosLosReportes.length > ultimoTotalReportes) {
+
+  sonidoNuevoReporte.play();
+
+}
+
+ultimoTotalReportes = todosLosReportes.length;
+
     aplicarFiltros();
     actualizarEstadisticas();
 
   } catch (error) {
-    console.error('Error al cargar reportes:', error);
-    document.getElementById('reportesContainer').innerHTML = `
-      <div class="no-reportes">
-        <div class="no-reportes-icon">❌</div>
-        <p>Error al cargar reportes: ${error.message}</p>
-      </div>
-    `;
-  }
+  console.error('Error al cargar reportes:', error);
+
+  document.getElementById('tbodyReportes').innerHTML = `
+    <tr>
+      <td colspan="14">❌ Error al cargar reportes</td>
+    </tr>
+  `;
+ }
 }
 
 // ============================================
@@ -1165,141 +1387,182 @@ function aplicarFiltros() {
 }
 
 // ============================================
+// UBICACION - BARRIO
+// ==========================
+async function obtenerDireccion(lat, lon) {
+
+  try {
+
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+    );
+
+    const data = await res.json();
+
+    const addr = data.address || {};
+
+    return (
+      addr.suburb ||
+      addr.neighbourhood ||
+      addr.village ||
+      addr.town ||
+      addr.city ||
+      addr.county ||
+      "Zona desconocida"
+    );
+
+  } catch (err) {
+
+    console.error(err);
+
+    return "Error ubicación";
+  }
+}
+
+
+// ============================================
 // RENDERIZAR REPORTES EN EL DOM
 // ============================================
 function renderizarReportes() {
-  const container = document.getElementById('reportesContainer');
+  const tbody = document.getElementById("tbodyReportes");
 
   if (reportesMostrados.length === 0) {
-    container.innerHTML = `
-      <div class="no-reportes">
-        <div class="no-reportes-icon">🔍</div>
-        <p>No hay reportes con estos filtros</p>
-      </div>
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="14" style="text-align:center">Sin reportes</td>
+      </tr>
     `;
     return;
   }
 
-  container.innerHTML = reportesMostrados.map(reporte => {
-    const fechaObj = new Date(reporte.fecha);
+  tbody.innerHTML = "";
 
-const fechaFormateada = fechaObj.toLocaleDateString('es-AR') + ' ' +
-  fechaObj.toLocaleTimeString('es-AR', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false   // 👈 CLAVE
-  });
+  reportesMostrados.forEach((r, index) => {
 
-    // Determinar si es nuevo 
-    const HORAS_NUEVO = 1; // podés cambiar fácil
-const esNuevo = (Date.now() - fechaObj.getTime()) < (HORAS_NUEVO * 60 * 60 * 1000);
+    const fechaObj = new Date(r.fecha);
 
-    return `
-      <div class="reporte-card">
+    const fecha = fechaObj.toLocaleDateString("es-AR");
+    const hora = fechaObj.toLocaleTimeString("es-AR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
 
-        <div class="reporte-header">
+    // ⏱ tiempo desde reporte
+    const diffMin = Math.floor((Date.now() - fechaObj.getTime()) / 60000);
+    let tiempo = "";
 
-  <!-- 1. FECHA/HORA -->
-  <span class="reporte-fecha">📅 ${fechaFormateada}</span>
+if (diffMin < 60) {
+  tiempo = `${diffMin} min`;
+} else if (diffMin < 1440) {
+  tiempo = `${Math.floor(diffMin/60)} h`;
+} else {
+  tiempo = `${Math.floor(diffMin/1440)} d`;
+}
 
-  <!-- 2. BADGE NUEVO (si aplica) -->
-  ${esNuevo ? '<span class="new-badge">🆕 NUEVO</span>' : ''}
+    // 📷 multimedia
+    let media = "";
 
-  <!-- 3. ESTADO -->
-  <span class="estado-badge estado-${reporte.estado}">
-    ${reporte.estado.toUpperCase().replace('-', ' ')}
+    if (r.media_url) {
+      if (r.media_url.match(/\.(mp4|webm|ogg)/i)) {
+        media += `<button onclick="verVideo('${r.media_url}')" class="btn-mini-tabla">🎥</button>`;
+      } else {
+        media += `<button onclick="abrirImagen('${r.media_url}')" class="btn-mini-tabla">📷</button>`;
+      }
+    }
+
+    if (r.audio_url) {
+      media += `<button onclick="reproducirAudio('${r.audio_url}')" class="btn-mini-tabla">🔊</button>`;
+    }
+
+    // 📍 ubicación
+    const idUbicacion = `ubi-${r.id}`;
+
+const ubicacion = `
+  <span id="${idUbicacion}">
+    ${r.lat?.toFixed(4)}, ${r.lon?.toFixed(4)}
   </span>
+`;
 
-  <!-- 4. BOTONES DE MEDIA (Video/Audio/Foto) -->
-  ${reporte.media_url ? `
-    ${(reporte.media_url.match(/\.(mp4|webm|ogg)/i)) ? `
-      <button onclick="verVideo('${reporte.media_url}')" class="btn-mini video" title="Ver video">
-        🎥 Ver video
-      </button>
-    ` : `
-      <button onclick="verFoto('${reporte.media_url}')" class="btn-mini foto" title="Ver foto">
-        📷 Ver foto
-      </button>
-    `}
-  ` : ''}
+    const tr = document.createElement("tr");
 
-  ${reporte.audio_url ? `
-    <button onclick="reproducirAudio('${reporte.audio_url}')" class="btn-mini audio" title="Reproducir audio">
-      🔊 Escuchar audio
-    </button>
-  ` : ''}
+    tr.innerHTML = `
+      <td>${r.id}</td>
+      <td>${fecha}</td>
+      <td>${hora}</td>
+      <td>${tiempo}</td>
 
+      <td>
+        <span class="badge-estado estado-${r.estado}">
+          ${r.estado}
+        </span>
+      </td>
 
+      <td>
+        <span class="badge-urgencia urgencia-${r.urgencia}">
+          ${r.urgencia}
+        </span>
+      </td>
 
-  <!-- 5. URGENCIA (al final) -->
-  <span class="urgencia-badge urgencia-${reporte.urgencia}">
-    ${reporte.urgencia === 'alta' ? '🔴' : reporte.urgencia === 'media' ? '🟡' : '🟢'}
-    ${reporte.urgencia.toUpperCase()}
+      <td>${getNombreAnimal(r.tipo_animal)}</td>
+
+      <td>
+  <span class="desc-corta" onclick="toggleDescripcion(this)">
+    ${r.descripcion || "-"}
   </span>
+</td>
 
+      <td>${ubicacion}</td>
+      <td>${r.zona || "-"}</td>
+      <td>${r.nombre_reportante || "-"}</td>
 
-</div>
+      <td>
+        ${r.telefono ? `
+          <a href="https://wa.me/54${r.telefono}" target="_blank">
+            📱 ${r.telefono}
+          </a>
+        ` : "-"}
+      </td>
 
-        <div class="reporte-info">
-          <div class="info-row">
-            <span class="info-label">🦎 Animal:</span>
-            <span class="info-value">${getNombreAnimal(reporte.tipo_animal)}</span>
-          </div>
+      <td>${media}</td>
 
-          <div class="info-row">
-            <span class="info-label">📝 Descripción:</span>
-            <span class="info-value">${reporte.descripcion}</span>
-          </div>
+      <td>
+        <button onclick="abrirMapa(${r.lat}, ${r.lon})" class="btn-mini-tabla">📍</button>
 
-          ${reporte.nombre_reportante ? `
-          <div class="info-row">
-            <span class="info-label">👤 Reportante:</span>
-            <span class="info-value">${reporte.nombre_reportante}</span>
-          </div>
-          ` : ''}
+        ${r.estado === "pendiente" ? `
+          <button onclick="cambiarEstado(${r.id}, 'en-proceso')" class="btn-mini-tabla">📩</button>
+        ` : ""}
 
-          ${reporte.telefono ? `
-          <div class="info-row">
-            <span class="info-label">📱 Teléfono:</span>
-            <span class="info-value">
-              <a href="https://wa.me/54${reporte.telefono}?text=Hola, recibimos tu reporte de fauna" target="_blank">
-  ${reporte.telefono}
-</a>
-            </span>
-          </div>
-          ` : ''}
-
-          <div class="info-row">
-            <span class="info-label">📍 Ubicación:</span>
-            <span class="info-value">
-              Lat: ${reporte.lat.toFixed(6)}, Lon: ${reporte.lon.toFixed(6)}
-            </span>
-          </div>
-        </div>
-
-       
-
-        <div class="reporte-actions">
-          <button class="action-btn btn-mapa" onclick="abrirMapa(${reporte.lat}, ${reporte.lon})">
-            📍 Ver en Mapa
-          </button>
-
-          ${reporte.estado === 'pendiente' ? `
-  <button class="action-btn btn-en-proceso" onclick="cambiarEstado(${reporte.id}, 'en-proceso')">
-    📩 Marcar Recibido
-  </button>
-` : ''}
-
-${reporte.estado === 'en-proceso' ? `
-  <button class="action-btn btn-completado" onclick="cambiarEstado(${reporte.id}, 'completado')">
-    ✅ Marcar Completado
-  </button>
-` : ''}
-
-</div>   <!-- cierre de reporte-actions -->
-</div>   <!-- cierre de reporte-card -->
+        ${r.estado === "en-proceso" ? `
+          <button onclick="cambiarEstado(${r.id}, 'completado')" class="btn-mini-tabla">✅</button>
+        ` : ""}
+      </td>
     `;
-  }).join('');
+
+
+   tbody.appendChild(tr);
+
+// ubicación automática
+if (r.lat && r.lon) {
+  obtenerDireccion(r.lat, r.lon).then(async dir => {
+
+    // 👉 mostrar en pantalla
+    const el = document.getElementById(`ubi-${r.id}`);
+    if (el) el.textContent = dir;
+
+    // 👉 guardar en BD si no tiene
+    if (!r.zona) {
+      await supabaseClient
+        .from('reportes-fauna')
+        .update({ zona: dir })
+        .eq('id', r.id);
+    }
+
+  });
+}
+
+}); // 👈 👈 👈 ESTA LÍNEA FALTABA
+
 }
 
 // ============================================
@@ -1329,8 +1592,7 @@ async function cambiarEstado(id, nuevoEstado) {
     const { error } = await supabaseClient
       .from('reportes-fauna')
       .update({ 
-        estado: nuevoEstado,
-        fecha: new Date().toISOString() // 👈 IMPORTANTE
+        estado: nuevoEstado
       })
       .eq('id', id);
 
@@ -1350,35 +1612,7 @@ setInterval(() => {
 
 // VER FOTO
 
-function verFoto(url) {
-  const modal = document.getElementById('modalMedia');
-  const contenido = document.getElementById('contenidoModal');
 
-  contenido.innerHTML = `
-    <div id="zoomContainer" style="overflow:hidden; cursor:grab;">
-      <img id="imgZoom" src="${url}" style="max-width:100%; transition: transform 0.2s;">
-    </div>
-  `;
-
-  modal.style.display = 'flex';
-
-  const img = document.getElementById('imgZoom');
-  let scale = 1;
-
-  // Zoom con rueda del mouse
-  contenido.onwheel = (e) => {
-    e.preventDefault();
-    scale += e.deltaY * -0.001;
-    scale = Math.min(Math.max(1, scale), 4);
-    img.style.transform = `scale(${scale})`;
-  };
-
-  // Doble click zoom
-  img.ondblclick = () => {
-    scale = scale === 1 ? 2 : 1;
-    img.style.transform = `scale(${scale})`;
-  };
-}
 
 // 	VER VIDEO
 function verVideo(url) {
@@ -1448,6 +1682,7 @@ function exportarExcel() {
       hour12: false
     });
 
+
     const nombre = r.nombre_reportante || "Sin nombre";
 
     csv += `${fecha};${hora};${r.tipo_animal};${r.descripcion};${nombre};${r.telefono};${r.urgencia};${r.estado};${r.lat};${r.lon}\n`;
@@ -1479,7 +1714,10 @@ function exportarExcel() {
 // BANNER PUBLICITARIO ROTATIVO
 // ============================================
 let slideActual = 0;
-let slides, indicators, totalSlides, intervaloBanner;
+let slides = [];
+let indicators = [];
+let totalSlides = 0;
+let intervaloBanner;
 
 function inicializarBanner() {
   slides = document.querySelectorAll('.banner-slide');
@@ -1518,33 +1756,67 @@ function irASlide(index) {
   intervaloBanner = setInterval(siguienteSlide, 10000);
 }
 
+// ============================================
+// VISOR MULTIMEDIA
+// ============================================
+
+function abrirImagen(url) {
+
+  document.getElementById('visorImagen').style.display = 'flex';
+
+  document.getElementById('contenidoVisor').innerHTML = `
+    <img src="${url}">
+  `;
+}
+
+function abrirVideo(url) {
+
+  document.getElementById('visorImagen').style.display = 'flex';
+
+  document.getElementById('contenidoVisor').innerHTML = `
+    <video controls autoplay>
+      <source src="${url}">
+    </video>
+  `;
+}
+
+function abrirAudio(url) {
+
+  document.getElementById('visorImagen').style.display = 'flex';
+
+  document.getElementById('contenidoVisor').innerHTML = `
+    <audio controls autoplay>
+      <source src="${url}">
+    </audio>
+  `;
+}
+
+function cerrarVisor() {
+
+  document.getElementById('visorImagen').style.display = 'none';
+
+  document.getElementById('contenidoVisor').innerHTML = '';
+}
+
+
+function toggleDescripcion(el) {
+  el.classList.toggle("desc-expandida");
+}
+
 </script>
 
-<!-- MODAL FOTO / VIDEO -->
-<div id="modalMedia" style="
-  display:none;
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:rgba(0,0,0,0.8);
-  justify-content:center;
-  align-items:center;
-  z-index:9999;
-">
-  <div style="position:relative; max-width:90%; max-height:90%;">
-    <span onclick="cerrarModal()" style="
-      position:absolute;
-      top:-30px;
-      right:0;
-      color:white;
-      font-size:30px;
-      cursor:pointer;
-    ">✖</span>
+ 
 
-    <div id="contenidoModal"></div>
-  </div>
+<!-- ============================================ -->
+<!-- VISOR MULTIMEDIA -->
+<!-- ============================================ -->
+
+<div id="visorImagen" class="visor-modal">
+
+  <span class="cerrar" onclick="cerrarVisor()">✖</span>
+
+  <div id="contenidoVisor"></div>
+
 </div>
 
 </body>
