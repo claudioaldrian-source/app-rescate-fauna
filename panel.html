@@ -1216,41 +1216,93 @@ let ultimoTotalReportes = 0;
 const sonidoNuevoReporte = new Audio('alerta.mp3');
 
 // ============================================
+// ============================================
 // LOGIN
 // ============================================
 loginForm.addEventListener('submit', async (e) => {
+
   e.preventDefault();
 
-  const email = document.getElementById('emailInput').value.trim();
-  const password = passwordInput.value.trim();
+  const email = document
+    .getElementById('emailInput')
+    .value
+    .trim();
 
+  const password = document
+    .getElementById('passwordInput')
+    .value
+    .trim();
+
+  const loginError =
+    document.getElementById('loginError');
+
+  // limpiar mensaje
+  loginError.style.display = 'none';
   loginError.textContent = '';
 
   try {
 
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-      email,
-      password
-    });
+    console.log('Intentando login...');
 
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    // ❌ error login
     if (error) {
-      loginError.textContent = '❌ Email o contraseña incorrectos';
+
+      console.error('ERROR LOGIN:', error);
+
+      loginError.style.display = 'block';
+
+      loginError.textContent =
+        '❌ ' + error.message;
+
       return;
     }
 
-    loginScreen.style.display = 'none';
-    panelScreen.style.display = 'block';
+    console.log('LOGIN OK');
 
-    cargarReportes();
+    // ✅ guardar sesión
+    sessionStorage.setItem(
+      'guardafauna_logged_in',
+      'true'
+    );
+
+    // ocultar login
+    document.getElementById('loginScreen')
+      .style.display = 'none';
+
+    // mostrar panel
+    document.getElementById('panelScreen')
+      .style.display = 'block';
+
+    // cargar reportes
+    await cargarReportes();
+
+    // realtime una sola vez
+    if (!window.realtimeActivo) {
+
+      suscribirseACambios();
+
+      window.realtimeActivo = true;
+    }
+
+    // banner
+    inicializarBanner();
 
   } catch (err) {
 
-    console.error(err);
+    console.error('ERROR GENERAL:', err);
+
+    loginError.style.display = 'block';
 
     loginError.textContent =
-      '❌ Error de conexión con Supabase';
-
+      '❌ ' + err.message;
   }
+
 });
 
 // ============================================
@@ -1263,11 +1315,19 @@ window.addEventListener('load', function() {
 });
 
 function mostrarPanel() {
+
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('panelScreen').style.display = 'block';
+
   cargarReportes();
-  suscribirseACambios();
-  inicializarBanner(); // Inicializar el banner
+
+  // 🔥 evita realtime duplicado
+  if (!window.realtimeActivo) {
+    suscribirseACambios();
+    window.realtimeActivo = true;
+  }
+
+  inicializarBanner();
 }
 
 function cerrarSesion() {
@@ -1543,25 +1603,48 @@ const ubicacion = `
    tbody.appendChild(tr);
 
 // ubicación automática
-if (r.lat && r.lon) {
+if (
+  r.lat &&
+  r.lon &&
+  !r.zona &&
+  !r.zona_error
+) {
+
   obtenerDireccion(r.lat, r.lon).then(async dir => {
 
     // 👉 mostrar en pantalla
     const el = document.getElementById(`ubi-${r.id}`);
-    if (el) el.textContent = dir;
 
-    // 👉 guardar en BD si no tiene
-    if (!r.zona) {
+    if (el) {
+      el.textContent = dir;
+    }
+
+    // ✅ si encontró barrio/localidad
+    if (dir !== "Error ubicación") {
+
       await supabaseClient
         .from('reportes-fauna')
-        .update({ zona: dir })
+        .update({
+          zona: dir
+        })
         .eq('id', r.id);
+
+    } else {
+
+      // ❌ si falló → NO volver a consultar
+      await supabaseClient
+        .from('reportes-fauna')
+        .update({
+          zona_error: true
+        })
+        .eq('id', r.id);
+
     }
 
   });
-}
 
-}); // 👈 👈 👈 ESTA LÍNEA FALTABA
+}
+  });
 
 }
 
