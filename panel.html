@@ -1058,6 +1058,7 @@ body{background:#EDE6D6}
 .hora-logout button{min-width:190px}
 .cb-abrir{background:#F2C14E;color:#3B2C05;box-shadow:0 3px 0 #9C7414}
 .cb-abrir:hover{background:#F6D27A}
+a.cb-abrir{display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;font-size:13.3px;min-width:190px;padding:7px 11px;border-radius:6px}
 .pub-abrir{background:#CFE3E4;color:#0F3B47;box-shadow:0 3px 0 #6E9AA3}
 .pub-abrir:hover{background:#E2EFF0}
 .logout-btn{background:#7FB069;color:#0F3B47;font-weight:700;box-shadow:0 3px 0 #4E7A3C}
@@ -1241,7 +1242,7 @@ body{background:#EDE6D6}
   <div class="hora-logout">
     <div id="horaActual"></div>
 
-  <button class="cb-abrir" onclick="cbAbrir()">🎮 Juego Carpibocha</button>
+  <a class="cb-abrir" href="panel-juego.html" target="_blank">🎮 Juego Carpibocha</a>
   <button class="cb-abrir pub-abrir" onclick="pubAbrir()">📢 Publicidades</button>
 
   <button class="logout-btn" onclick="cerrarSesion()">
