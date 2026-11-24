@@ -1,13 +1,15 @@
 // Service worker de Reporte Fauna Santa Fe
 // Guarda la app (pantalla, logos, iconos) para que abra rápido aunque haya mala señal.
 // Los reportes y archivos van SIEMPRE directo a Supabase: nunca se guardan acá.
-const VERSION = 'fauna-v8';   // cambiá este número cada vez que subas una versión nueva
+const VERSION = 'fauna-v9';   // cambiá este número cada vez que subas una versión nueva
 const ARCHIVOS = [
   './',
   'index.html',
   'manifest.json',
   'logo-santafe.png',
   'logo_macla.png',
+  'acompanan.js',
+  'pie.js',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/apple-touch-icon.png'
