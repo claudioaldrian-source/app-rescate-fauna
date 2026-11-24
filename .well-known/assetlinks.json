@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "ar.maclaia.rescatefauna",
+        "sha256_cert_fingerprints": ["41:DA:C2:40:70:8E:AE:F6:3E:8B:9D:DF:6D:80:D2:D8:B2:32:CE:0A:73:30:5B:1A:00:2C:B3:05:EA:FD:56:2B"]
+      }
+    }]
