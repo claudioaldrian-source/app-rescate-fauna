@@ -1396,7 +1396,9 @@ const sonidoNuevoReporte = new Audio('alerta.mp3');
 // Se edita en la conversación del juego; acá solo se abre en otra pestaña.
 // ============================================
 function cbAbrir() {
-  window.open('panel-juego.html', 'carpibocha');
+  // pestaña nueva; si el navegador la bloquea, lo abre en esta misma
+  const v = window.open('panel-juego.html', '_blank');
+  if (!v) location.href = 'panel-juego.html';
 }
 
 // ============================================
