@@ -1125,22 +1125,23 @@ body{background:#EDE6D6}
 #tablaReportes th:nth-child(2), #tablaReportes td:nth-child(2){width:84px}   /* Fecha */
 #tablaReportes th:nth-child(3), #tablaReportes td:nth-child(3){width:52px}   /* Hora */
 #tablaReportes th:nth-child(4), #tablaReportes td:nth-child(4){width:62px}   /* Tiempo */
-#tablaReportes th:nth-child(5), #tablaReportes td:nth-child(5){width:96px}   /* Estado */
+#tablaReportes th:nth-child(5), #tablaReportes td:nth-child(5){width:92px}   /* Estado */
 #tablaReportes th:nth-child(6), #tablaReportes td:nth-child(6){width:72px}   /* Urgencia */
-#tablaReportes th:nth-child(7), #tablaReportes td:nth-child(7){width:90px}   /* Animal */
+#tablaReportes th:nth-child(7), #tablaReportes td:nth-child(7){width:84px}   /* Animal */
 #tablaReportes th:nth-child(8), #tablaReportes td:nth-child(8){width:auto}  /* Descripción: usa el espacio que sobra */
-#tablaReportes th:nth-child(9), #tablaReportes td:nth-child(9){width:120px}  /* Ubicación */
-#tablaReportes th:nth-child(10),#tablaReportes td:nth-child(10){width:100px} /* Zona */
-#tablaReportes th:nth-child(11),#tablaReportes td:nth-child(11){width:110px} /* Reportante */
-#tablaReportes th:nth-child(12),#tablaReportes td:nth-child(12){width:112px} /* Teléfono */
-#tablaReportes th:nth-child(13),#tablaReportes td:nth-child(13){width:136px} /* Multimedia: hasta 3 íconos */
-#tablaReportes th:nth-child(14),#tablaReportes td:nth-child(14){width:96px}  /* Acciones: 2 íconos */
-#tablaReportes td:nth-child(13),#tablaReportes td:nth-child(14){white-space:nowrap}
+#tablaReportes th:nth-child(9), #tablaReportes td:nth-child(9){width:100px}  /* Ubicación */
+#tablaReportes th:nth-child(10),#tablaReportes td:nth-child(10){width:96px} /* Zona */
+#tablaReportes th:nth-child(11),#tablaReportes td:nth-child(11){width:92px} /* Localidad */
+#tablaReportes th:nth-child(12),#tablaReportes td:nth-child(12){width:100px} /* Reportante */
+#tablaReportes th:nth-child(13),#tablaReportes td:nth-child(13){width:104px} /* Teléfono */
+#tablaReportes th:nth-child(14),#tablaReportes td:nth-child(14){width:132px} /* Multimedia: hasta 3 íconos */
+#tablaReportes th:nth-child(15),#tablaReportes td:nth-child(15){width:92px}  /* Acciones: 2 íconos */
+#tablaReportes td:nth-child(14),#tablaReportes td:nth-child(15){white-space:nowrap}
 #tablaReportes td:nth-child(2),#tablaReportes td:nth-child(3),#tablaReportes td:nth-child(4){white-space:nowrap}
 #tablaReportes .badge-estado,#tablaReportes .badge-urgencia{white-space:nowrap;display:inline-block}
 /* en pantallas angostas la tabla se desliza de costado en vez de apretarse */
 .tabla-scroll{overflow-x:auto}
-#tablaReportes{min-width:1300px}
+#tablaReportes{min-width:1320px}
 
 /* ============================================ */
 /* CONFIRMAR CAMBIO DE ESTADO                   */
@@ -1353,6 +1354,7 @@ body{background:#EDE6D6}
         <th>Descripción</th>
         <th>Ubicación</th>
         <th>Zona</th>
+        <th>Localidad</th>
         <th>Reportante</th>
         <th>Teléfono</th>
         <th>Multimedia</th>
@@ -1362,7 +1364,7 @@ body{background:#EDE6D6}
 
     <tbody id="tbodyReportes">
       <tr>
-        <td colspan="14" style="text-align:center">Cargando reportes...</td>
+        <td colspan="15" style="text-align:center">Cargando reportes...</td>
       </tr>
     </tbody>
   </table>
@@ -1565,7 +1567,7 @@ ultimoTotalReportes = todosLosReportes.length;
 
   document.getElementById('tbodyReportes').innerHTML = `
     <tr>
-      <td colspan="14">❌ Error al cargar reportes</td>
+      <td colspan="15">❌ Error al cargar reportes</td>
     </tr>
   `;
  }
@@ -1640,34 +1642,54 @@ function aplicarFiltros() {
 // ============================================
 // UBICACION - BARRIO
 // ==========================
+// Pide a OpenStreetMap el barrio y la localidad de un punto.
+// Nominatim permite 1 consulta por segundo: se hacen de a una, en fila.
 async function obtenerDireccion(lat, lon) {
-
   try {
-
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
-    );
-
-    const data = await res.json();
-
-    const addr = data.address || {};
-
-    return (
-      addr.suburb ||
-      addr.neighbourhood ||
-      addr.village ||
-      addr.town ||
-      addr.city ||
-      addr.county ||
-      "Zona desconocida"
-    );
-
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&accept-language=es&zoom=16&lat=${lat}&lon=${lon}`);
+    if (!res.ok) throw new Error(res.status);
+    const addr = (await res.json()).address || {};
+    const localidad = addr.city || addr.town || addr.village || addr.hamlet || addr.municipality || addr.county || null;
+    const zona = addr.suburb || addr.neighbourhood || addr.quarter || addr.residential || null;
+    return { zona: zona || localidad || 'Zona desconocida', localidad: localidad || '-' };
   } catch (err) {
-
-    console.error(err);
-
-    return "Error ubicación";
+    console.warn('Ubicación:', err);
+    return null;
   }
+}
+
+const colaZonas = [], enCola = new Set();
+let procesandoZonas = false;
+function pedirZona(r) {
+  if (enCola.has(r.id)) return;
+  enCola.add(r.id); colaZonas.push(r);
+  if (!procesandoZonas) procesarZonas();
+}
+async function procesarZonas() {
+  procesandoZonas = true;
+  while (colaZonas.length) {
+    const r = colaZonas.shift();
+    const dir = await obtenerDireccion(r.lat, r.lon);
+    const cambios = dir ? { zona: r.zona || dir.zona, localidad: dir.localidad } : { zona_error: true };
+    if (dir) {
+      const z = document.getElementById(`zona-${r.id}`), l = document.getElementById(`loc-${r.id}`);
+      if (z) z.textContent = cambios.zona; if (l) l.textContent = cambios.localidad;
+      const local = todosLosReportes.find(x => x.id === r.id); if (local) Object.assign(local, cambios);
+    }
+    try { await supabaseClient.from('reportes-fauna').update(cambios).eq('id', r.id); } catch (e) {}
+    await new Promise(ok => setTimeout(ok, 1200));
+  }
+  procesandoZonas = false;
+}
+
+// Link de WhatsApp para celulares argentinos: 549 + característica + número
+function linkWhatsApp(tel) {
+  let d = String(tel || '').replace(/\D/g, '');
+  if (d.startsWith('54')) d = d.slice(2);
+  if (d.startsWith('9')) d = d.slice(1);
+  if (d.startsWith('0')) d = d.slice(1);
+  d = d.replace(/^(\d{2,4})15/, '$1');   // saca el 15 después de la característica
+  return 'https://wa.me/549' + d;
 }
 
 
@@ -1680,7 +1702,7 @@ function renderizarReportes() {
   if (reportesMostrados.length === 0) {
     tbody.innerHTML = `
       <tr>
-        <td colspan="14" style="text-align:center">Sin reportes</td>
+        <td colspan="15" style="text-align:center">Sin reportes</td>
       </tr>
     `;
     return;
@@ -1765,12 +1787,13 @@ const ubicacion = `
 </td>
 
       <td>${ubicacion}</td>
-      <td>${r.zona || "-"}</td>
+      <td id="zona-${r.id}">${r.zona || "-"}</td>
+      <td id="loc-${r.id}">${r.localidad || "-"}</td>
       <td>${r.nombre_reportante || "-"}</td>
 
       <td>
         ${r.telefono ? `
-          <a href="https://wa.me/54${r.telefono}" target="_blank">
+          <a href="${linkWhatsApp(r.telefono)}" target="_blank" rel="noopener">
             📱 ${r.telefono}
           </a>
         ` : "-"}
@@ -1794,48 +1817,8 @@ const ubicacion = `
 
    tbody.appendChild(tr);
 
-// ubicación automática
-if (
-  r.lat &&
-  r.lon &&
-  !r.zona &&
-  !r.zona_error
-) {
-
-  obtenerDireccion(r.lat, r.lon).then(async dir => {
-
-    // 👉 mostrar en pantalla
-    const el = document.getElementById(`ubi-${r.id}`);
-
-    if (el) {
-      el.textContent = dir;
-    }
-
-    // ✅ si encontró barrio/localidad
-    if (dir !== "Error ubicación") {
-
-      await supabaseClient
-        .from('reportes-fauna')
-        .update({
-          zona: dir
-        })
-        .eq('id', r.id);
-
-    } else {
-
-      // ❌ si falló → NO volver a consultar
-      await supabaseClient
-        .from('reportes-fauna')
-        .update({
-          zona_error: true
-        })
-        .eq('id', r.id);
-
-    }
-
-  });
-
-}
+// barrio y localidad automáticos (una sola vez por reporte)
+if (r.lat && r.lon && (!r.zona || !r.localidad) && !r.zona_error) pedirZona(r);
   });
 
 }
@@ -1951,7 +1934,8 @@ setInterval(actualizarHora, 1000);
 actualizarHora();
 
 function exportarExcel() {
-  let csv = "Fecha;Hora;Animal;Descripción;Reportante;Teléfono;Prioridad;Estado;Lat;Lon\n";
+  const c = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+  let csv = "Fecha;Hora;Animal;Descripción;Zona;Localidad;Reportante;Teléfono;Prioridad;Estado;Lat;Lon\n";
 
   reportesMostrados.forEach(r => {
 
@@ -1968,7 +1952,7 @@ function exportarExcel() {
 
     const nombre = r.nombre_reportante || "Sin nombre";
 
-    csv += `${fecha};${hora};${r.tipo_animal};${r.descripcion};${nombre};${r.telefono};${r.urgencia};${r.estado};${r.lat};${r.lon}\n`;
+    csv += [fecha, hora, r.tipo_animal, r.descripcion, r.zona, r.localidad, nombre, r.telefono, r.urgencia, r.estado, r.lat, r.lon].map(c).join(';') + '\n';
   });
 
   const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
