@@ -2,53 +2,138 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>🐍 Reporte de Fauna Santa Fe</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporte Fauna Santa Fe</title>
+  <meta name="description" content="Avisá cuando veas un animal silvestre y un rescatista va al lugar.">
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0F3B47">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Rescate Fauna">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
 
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    /* ============================================
+       PALETA "HUMEDAL"
+       ============================================ */
+    :root {
+      --petroleo:   #0F3B47;
+      --petroleo-2: #1E5B6B;
+      --petroleo-3: #174652;
+      --arena:      #EDE6D6;
+      --crema:      #F2E8CF;
+      --junco:      #7FB069;
+      --ocre:       #C9762B;
+      --amarillo:   #F2C14E;
+      --tinta:      #11262B;
+      --linea:      #D6D0C2;
+      --campo:      #FAF7F0;
+      --rojo:       #B3261E;
     }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: 'Nunito', 'Segoe UI', Roboto, sans-serif;
+      background: var(--arena);
+      color: var(--tinta);
       min-height: 100vh;
-      padding: 10px;
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
-    .container {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-}
+    /* ============================================
+       ENCABEZADO CON PAISAJE
+       ============================================ */
+    .portada {
+      position: relative;
+      height: 290px;
+      overflow: hidden;
+      padding-top: env(safe-area-inset-top);
+    }
+    .paisaje {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
 
-    h1 {
-      color: white;
+    .header {
+      position: relative;
+      max-width: 500px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 18px 12px 0;
+    }
+    .logo-header {
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    .header-text {
+      flex: 1;
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 24px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      color: var(--crema);
+    }
+    .titulo-principal {
+      font-size: 21px;
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--crema);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.35);
+    }
+    .subtitulo {
+      margin-top: 4px;
+      font-size: 12px;
+      line-height: 1.3;
+      color: #CFE3E4;
+    }
+    .contacto-macla {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      flex-shrink: 0;
+      color: var(--crema);
+      font-size: 11px;
+      font-weight: 800;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* ============================================
+       CONTENIDO
+       ============================================ */
+    .container {
+      position: relative;
+      max-width: 500px;
+      margin: -64px auto 0;
+      padding: 0 12px 16px;
     }
 
     .card {
       background: white;
-      padding: 8px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      padding: 14px;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(15,59,71,0.22);
     }
 
-    .form-group {
-      margin-bottom: 4px;
-    }
+    .form-group { margin-bottom: 10px; }
 
-    label {
+    label, .etiqueta {
       display: block;
-      margin-bottom: 2px;
-      color: #333;
-      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--petroleo-3);
+      font-weight: 800;
       font-size: 14px;
     }
 
@@ -57,495 +142,557 @@
     textarea,
     select {
       width: 100%;
-      padding: 7px;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
+      min-height: 44px;
+      padding: 8px 10px;
+      border: 1px solid var(--linea);
+      border-radius: 10px;
       font-size: 16px;
-      transition: border-color 0.3s;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-      outline: none;
-      border-color: #667eea;
-    }
-
-    textarea {
-      min-height: 60px;
-      resize: vertical;
       font-family: inherit;
+      color: var(--tinta);
+      background: var(--campo);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--petroleo-2);
+      box-shadow: 0 0 0 3px rgba(30,91,107,0.18);
+    }
+    textarea { min-height: 66px; resize: vertical; }
+
+    .fila-doble { display: flex; gap: 6px; align-items: stretch; }
+    .fila-doble select { flex: 1; min-width: 0; }
+
+    .fila-contacto {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      gap: 8px;
     }
 
-    .file-input-wrapper {
-      position: relative;
-      overflow: hidden;
-      display: inline-block;
-      width: 100%;
-    }
+    .icono { width: 18px; height: 18px; flex-shrink: 0; }
 
-    .file-input-wrapper input[type=file] {
-      position: absolute;
-      left: -9999px;
-    }
-
-    .file-button {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      background: #4CAF50;
-      color: white;
+    .btn-audio {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 12px;
       border: none;
       border-radius: 10px;
+      background: var(--petroleo-3);
+      color: white;
+      font: 700 14px inherit;
+      font-family: inherit;
+      white-space: nowrap;
       cursor: pointer;
-      font-size: 14px;
-      font-weight: 600;
-      text-align: center;
-      transition: background 0.3s;
+    }
+    .btn-audio.grabando { background: var(--rojo); }
+    .btn-audio.listo    { background: #3E7B3A; }
+    #audioPreview audio { width: 100%; margin-top: 6px; }
+
+    /* Foto / Video */
+    .media-grid {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      gap: 4px 8px;
+    }
+    .badge-media {
+      justify-self: center;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+    .badge-media.obligatorio { background: var(--amarillo); color: #3B2C05; }
+    .badge-media.opcional    { background: #E3E0D6; color: #44413A; }
+
+    .media-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 46px;
+      border: 2px solid var(--petroleo-2);
+      background: white;
+      color: var(--petroleo-2);
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .media-btn.cargado {
+      background: var(--petroleo-2);
+      color: white;
     }
 
-    .file-button:hover {
-      background: #45a049;
-    }
-
-    .media-preview {
-      margin-top: 3px;
-      border-radius: 8px;
-      overflow: hidden;
-      display: none;
-    }
-
+    .media-preview { display: none; margin-top: 6px; }
     .media-preview img,
     .media-preview video {
       width: 100%;
+      max-height: 220px;
+      object-fit: cover;
       display: block;
-      border-radius: 8px;
+      border-radius: 10px;
     }
 
+    /* Botones principales */
     .btn {
       width: 100%;
-      padding: 7px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 700;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: inherit;
+      color: white;
       cursor: pointer;
-      transition: all 0.3s;
-      margin-top: 5px;
+      transition: filter 0.2s, transform 0.1s;
     }
-
-    .btn-location {
-      background: #FF9800;
-      color: white;
-      margin-top: 3px !important;
-    }
-
-    .btn-location:hover {
-      background: #F57C00;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(255,152,0,0.3);
-    }
-
-    .btn-submit {
-      background: #667eea;
-      color: white;
-    }
-
-    .btn-submit:hover {
-      background: #5568d3;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102,126,234,0.4);
-    }
-
-    .btn-submit:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-      transform: none;
-    }
+    .btn:active { transform: scale(0.98); }
+    .btn-location { background: var(--ocre); }
+    .btn-submit   { background: var(--petroleo); }
+    .btn:hover    { filter: brightness(1.08); }
+    .btn-submit:disabled { background: #9BB0B5; cursor: not-allowed; }
 
     .ubicacion-info {
-      background: #e8f5e9;
-      padding: 7px;
-      border-radius: 8px;
-      margin-top: 5px;
       display: none;
-      font-size: 13px;
-      color: #2e7d32;
-    }
-
-    .alert {
-      padding: 12px;
+      margin-top: 6px;
+      padding: 8px 10px;
       border-radius: 10px;
-      margin-bottom: 15px;
-      display: none;
+      background: #E4F0DE;
+      color: #2F5A27;
+      font-size: 13px;
     }
-
-    .alert-success {
-      background: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
-
-    .alert-error {
-      background: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
+    .ubicacion-info.error { background: #F8DEDC; color: var(--rojo); }
 
     .loading {
       display: none;
       text-align: center;
-      margin-top: 15px;
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--petroleo-3);
     }
-
     .spinner {
-      border: 3px solid #f3f3f3;
-      border-top: 3px solid #667eea;
+      width: 34px;
+      height: 34px;
+      margin: 0 auto 6px;
+      border: 3px solid #DCE6E8;
+      border-top-color: var(--petroleo-2);
       border-radius: 50%;
-      width: 40px;
-      height: 40px;
       animation: spin 1s linear infinite;
-      margin: 0 auto;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    /* Instalar app */
+    .instalar {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--petroleo-3);
+      color: var(--crema);
+      font-size: 14px;
+      align-items: center;
+      gap: 10px;
     }
-
-    .media-type-selector {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5px;
-      margin-bottom: 5px;
-    }
-
-    .media-type-btn {
-      padding: 7px;
-      border: 2px solid #e0e0e0;
-      background: white;
+    .instalar.visible { display: flex; }
+    .instalar p { flex: 1; line-height: 1.3; }
+    .instalar button {
+      flex-shrink: 0;
+      min-height: 40px;
+      padding: 0 14px;
+      border: none;
       border-radius: 10px;
+      background: var(--crema);
+      color: var(--petroleo);
+      font: 800 14px inherit;
+      font-family: inherit;
       cursor: pointer;
-      transition: all 0.3s;
-      font-weight: 600;
+    }
+    .instalar .cerrar-instalar {
+      background: transparent;
+      color: var(--crema);
+      padding: 0 6px;
+      font-size: 18px;
     }
 
-    .media-type-btn.active {
-      background: #667eea;
+    /* «Nos acompañan»: los arma acompanan.js */
+    #acompanan { margin-top: 14px; }
+
+    /* Registro (una sola vez) */
+    .registro h2 { font-size: 21px; font-weight: 900; color: var(--petroleo); margin-bottom: 6px; }
+    .registro-texto { font-size: 14px; line-height: 1.45; color: var(--tinta); margin-bottom: 12px; }
+    .registro-error { color: var(--rojo); font-size: 14px; font-weight: 700; min-height: 1.2em; margin-bottom: 6px; }
+    .label-ayuda { font-size: 12px; font-weight: 600; color: #6B7477; }
+    body.sin-registro #formCard, body.sin-registro #seguimiento, body.sin-registro .instalar { display: none !important; }
+
+    /* Quién reporta */
+    .usuario-bar {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--arena); border-radius: 12px;
+      padding: 8px 10px; margin-bottom: 12px; color: var(--petroleo);
+    }
+    .usuario-datos { flex: 1; min-width: 0; display: grid; line-height: 1.2; }
+    .usuario-datos b { font-size: 15px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .usuario-datos span { font-size: 13px; color: #44413A; }
+    .usuario-cambiar {
+      flex-shrink: 0; min-height: 36px; padding: 0 12px;
+      border: 1.5px solid var(--petroleo-2); border-radius: 9px;
+      background: white; color: var(--petroleo-2);
+      font-weight: 700; font-size: 13px; font-family: inherit; cursor: pointer;
+    }
+
+    /* Descripción con audio al lado del título */
+    .fila-label { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+    .fila-label label { margin-bottom: 0; }
+    .fila-label .label-ayuda { display: block; }
+    .fila-label .btn-audio { min-height: 40px; }
+
+    /* Ubicación automática */
+    .ubicacion-fila { display: flex; gap: 6px; align-items: stretch; }
+    .ubicacion-fila .ubicacion-info { display: flex; align-items: center; flex: 1; margin-top: 0; }
+    .btn-ubicacion {
+      flex-shrink: 0; display: flex; align-items: center; gap: 4px;
+      padding: 0 10px; min-height: 44px;
+      border: none; border-radius: 10px;
+      background: var(--ocre); color: white;
+      font-weight: 700; font-size: 13px; font-family: inherit; cursor: pointer;
+    }
+    .ubicacion-info.buscando { background: #FFF4DE; color: #7A4B0B; }
+
+    /* Ventana de agradecimiento */
+    #gracias {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(8,37,45,0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    #gracias.abierto { display: flex; }
+    .gracias-caja {
+      background: white;
+      border-radius: 20px;
+      padding: 24px 20px 18px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      display: grid;
+      gap: 10px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.35);
+      animation: aparecer 0.25s ease-out;
+    }
+    .gracias-garza { width: 88px; height: 88px; justify-self: center; }
+    .gracias-caja h2 { font-size: 22px; font-weight: 900; color: var(--petroleo); }
+    .gracias-caja p { font-size: 15px; line-height: 1.45; color: var(--tinta); }
+    .gracias-caja .gracias-tip {
+      font-size: 13px;
+      color: #44413A;
+      background: var(--arena);
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+    #avisoEstado {
+      position: fixed; inset: 0; z-index: 10001;
+      background: rgba(8,37,45,0.7);
+      display: none; align-items: center; justify-content: center; padding: 16px;
+    }
+    #avisoEstado.abierto { display: flex; }
+    .aviso-icono { font-size: 54px; }
+
+    /* Tarjeta de seguimiento */
+    .seguimiento {
+      position: relative;
+      background: white;
+      border: 2px solid var(--petroleo-2);
+      border-radius: 16px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 6px 18px rgba(15,59,71,0.18);
+    }
+    .seguimiento[hidden] { display: none; }
+    .seg-titulo { font-size: 13px; font-weight: 800; color: var(--petroleo-3); text-transform: none; }
+    .seg-desc { font-size: 14px; color: var(--tinta); margin: 2px 30px 8px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .seg-pasos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+    .seg-paso {
+      text-align: center; font-size: 12px; font-weight: 700;
+      padding: 6px 2px; border-radius: 8px;
+      background: #EEE9DD; color: #8A8576;
+    }
+    .seg-paso.hecho { background: #CFE3E4; color: var(--petroleo); }
+    .seg-paso.actual { background: var(--petroleo); color: var(--crema); }
+    .seg-estado { font-size: 13px; color: var(--petroleo-3); margin-top: 8px; }
+    .seg-cerrar {
+      position: absolute; top: 6px; right: 6px;
+      width: 32px; height: 32px; border: none; border-radius: 50%;
+      background: var(--arena); color: var(--petroleo); font-size: 14px; cursor: pointer;
+    }
+
+    @keyframes aparecer { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
+
+    /* Avisos */
+    .alerta-bottom {
+      position: fixed;
+      bottom: calc(20px + env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 32px);
+      max-width: 460px;
+      padding: 14px 18px;
+      border-radius: 12px;
+      background: #2F6B3A;
       color: white;
-      border-color: #667eea;
-    }
-
-    .optional-badge {
-      background: #FFC107;
-      color: #333;
-      padding: 2px 8px;
-      border-radius: 5px;
-      font-size: 11px;
-      margin-left: 5px;
+      font-size: 14px;
       font-weight: 600;
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+      z-index: 9999;
+      transition: all 0.4s ease;
+    }
+    .alerta-bottom.error { background: var(--rojo); }
+    .alerta-bottom.ocultar { opacity: 0; transform: translateX(-50%) translateY(20px); }
+
+    .cartel-recibido {
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px 30px;
+      border-radius: 16px;
+      background: var(--petroleo);
+      color: var(--crema);
+      font-size: 18px;
+      font-weight: 800;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+      z-index: 9999;
+      transition: opacity 0.5s;
     }
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 5px;
-}
+    @media (max-width: 380px) {
+      .logo-header { width: 46px; height: 46px; }
+      .titulo-principal { font-size: 18px; }
+      .subtitulo { font-size: 11px; }
+      .contacto-macla { font-size: 10px; }
+      .btn-audio { padding: 0 9px; font-size: 13px; }
+    }
 
-.logo {
-  height: 90px;
-  width: auto;
-}
-
-.logo2 {
-  height: 70px;
-  flex-shrink: 0;
-  filter: brightness(1.5) contrast(1.3);
-}
-
-@media (max-width: 600px) {
-  .logo {
-    height: 50px;
-  }
-}
-
-.header-text {
-  text-align: center;
-  flex: 1;
-  color: white;
-}
-
-.header-text h1 {
-  font-size: 18px;
-  margin-bottom: 3px;
-}
-
-.header-text p {
-  font-size: 12px;
-}
-
-.titulo-principal {
-  color: #A8E063;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.2);
-}
-
-.descripcion-con-audio {
-  display: flex;
-  align-items: stretch;
-  gap: 6px;
-}
-
-.descripcion-con-audio textarea {
-  flex: 1;
-  padding: 7px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  resize: none;
-  min-height: 70px;
-}
-
-.btn-audio {
-  background: #5a6268;
-  color: white;
-  padding: 0px 6px;
-  border-radius: 8px;
-  font-size: 14px;
-  cursor: pointer;
-  min-width: 70px;
-  display: flex;
-  height: 30px;
-  align-items: center;
-  justify-content: center;
-}
-
-.btn-audio:hover {
-  background: #5a6268;
-}
-
-@media (max-width: 600px) {
-
-  .descripcion-con-audio {
-    flex-direction: column;
-  }
-
-  .btn-audio {
-    width: 100%;
-  }
-}
-
-.urgencia-muerto {
-  background: #eeeeee;
-  color: #000;
-}
-
-.logo-banner-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 10px;
-  width: 100%;              /* 👈 ocupa todo el ancho */
-}
-
-/* BANNER */
-.mini-banner {
-  flex: 1;
-  height: 60px;
-  min-height: 60px;
-  background: white;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-
-@media (max-width: 600px) {
-
-  .logo-banner-row {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .logo2 {
-    height: 55px;
-  }
-
-  .mini-banner {
-    width: 100%;
-    height: 50px;
-  }
-
-}
-
-.fila-descripcion {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.fila-descripcion label {
-  display: inline-block; /* 👈 IMPORTANTE */
-  margin: 0;
-}
-
-.alerta-bottom {
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  
-  background: #4CAF50;
-  color: white;
-  padding: 14px 18px;
-  border-radius: 10px;
-  
-  font-size: 14px;
-  text-align: center;
-  
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  z-index: 9999;
-
-  opacity: 1;
-  transition: all 0.4s ease;
-}
-
-.alerta-bottom.ocultar {
-  opacity: 0;
-  transform: translateX(-50%) translateY(20px);
-}
-
+    @media (prefers-reduced-motion: reduce) {
+      .alerta-bottom, .spinner { transition: none; animation: none; }
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
+<!-- ============================================ -->
+<!-- ENCABEZADO -->
+<!-- ============================================ -->
+<div class="portada">
+  <svg class="paisaje" viewBox="0 0 390 250" preserveAspectRatio="xMidYMax slice" aria-hidden="true"><defs><linearGradient id="cielo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E5B6B"/><stop offset="1" stop-color="#0F3B47"/></linearGradient></defs><rect width="390" height="250" fill="url(#cielo)"/><circle cx="225" cy="142" r="20" fill="#F2E8CF" opacity=".9"/><rect y="190" width="390" height="60" fill="#0B3039"/><path d="M20 198h60" stroke="#2C6E7D" stroke-width="2" stroke-linecap="round"/><path d="M50 206h70" stroke="#2C6E7D" stroke-width="2" stroke-linecap="round"/><path d="M80 214h80" stroke="#2C6E7D" stroke-width="2" stroke-linecap="round"/><path d="M110 222h90" stroke="#2C6E7D" stroke-width="2" stroke-linecap="round"/><path d="M140 230h100" stroke="#2C6E7D" stroke-width="2" stroke-linecap="round"/><path d="M170 238h110" stroke="#2C6E7D" stroke-width="2" stroke-linecap="round"/><path d="M229 200q0 -24.5 -4 -49" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><ellipse cx="229" cy="151" rx="2.6" ry="7" fill="#5C8A4A"/><path d="M234 200q-5 -37.0 1 -74" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M245 200q2 -21.5 -1 -43" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M248 200q0 -22.5 2 -45" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><ellipse cx="248" cy="155" rx="2.6" ry="7" fill="#5C8A4A"/><path d="M255 200q-5 -27.5 4 -55" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M265 200q3 -21.5 -3 -43" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M270 200q4 -40.0 -4 -80" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><ellipse cx="270" cy="120" rx="2.6" ry="7" fill="#5C8A4A"/><path d="M280 200q0 -38.5 -4 -77" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M284 200q2 -21.0 -2 -42" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M292 200q-4 -33.0 4 -66" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><ellipse cx="292" cy="134" rx="2.6" ry="7" fill="#5C8A4A"/><path d="M297 200q-2 -38.0 4 -76" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M310 200q-4 -41.5 -3 -83" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M315 200q4 -38.0 -1 -76" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><ellipse cx="315" cy="124" rx="2.6" ry="7" fill="#5C8A4A"/><path d="M320 200q2 -23.0 -3 -46" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M329 200q3 -21.5 -1 -43" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M335 200q2 -41.5 2 -83" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><ellipse cx="335" cy="117" rx="2.6" ry="7" fill="#5C8A4A"/><path d="M345 200q1 -30.0 3 -60" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M348 200q-3 -29.5 -2 -59" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M358 200q-3 -44.5 -3 -89" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><ellipse cx="358" cy="111" rx="2.6" ry="7" fill="#5C8A4A"/><path d="M364 200q2 -29.5 3 -59" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M369 200q1 -43.0 0 -86" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><path d="M378 200q-5 -22.0 4 -44" stroke="#7FB069" stroke-width="2" fill="none" opacity=".85"/><ellipse cx="378" cy="156" rx="2.6" ry="7" fill="#5C8A4A"/><g fill="#08252D"><ellipse cx="150" cy="160" rx="24" ry="11" transform="rotate(-12 150 160)"/><path d="M168 152C178 132 168 118 176 104L181 106C176 120 186 134 174 156Z"/><circle cx="180" cy="102" r="6"/><path d="M184 100L206 104L184 105Z"/></g><path d="M146 170L144 198M156 170L158 198" stroke="#08252D" stroke-width="2.4"/></svg>
+  <div class="header">
+    <img src="logo-santafe.png" class="logo-header" alt="Rescate Fauna">
 
-<div class="header">
+    <div class="header-text">
+      <h1 class="titulo-principal">Reporte Fauna Santa Fe</h1>
+      <p class="subtitulo">¿Viste un animal silvestre? Avisanos y vamos al rescate</p>
+    </div>
 
-
-  <div class="header-text">
-    <h1 class="titulo-principal">Reporte Fauna Santa Fe</h1>
-    <p>Sincronizado por Macla-IA de Claudio ALDRIAN</p>
-   </div>
+    <a class="contacto-macla" href="https://wa.me/5493482530384" target="_blank" rel="noopener">
+      <img src="logo_macla.png" class="logo-header" alt="Macla-IA">
+      <span>3482-530384</span>
+    </a>
+  </div>
 </div>
 
-  <!-- ESPACIO PARA BANNER -LOGO -->
-  <div class="logo-banner-row">
+<div class="container">
 
-  <img src="logo-santafe.png" class="logo2">
-
-  <div class="mini-banner">
-    PUBLICIDAD
+  <!-- ============================================ -->
+  <!-- FORMULARIO -->
+  <!-- ============================================ -->
+  <!-- REGISTRO: se completa una sola vez -->
+  <div class="card registro" id="registro" hidden>
+    <h2>¡Bienvenida, bienvenido!</h2>
+    <p class="registro-texto">Antes de empezar, contanos quién sos. Lo pedimos <b>una sola vez</b>: queda guardado en este celular para que el rescatista pueda comunicarse con vos si hace falta.</p>
+    <form id="registroForm" novalidate>
+      <div class="form-group fila-contacto">
+        <div>
+          <label for="rNombre">Nombre</label>
+          <input type="text" id="rNombre" autocomplete="given-name" maxlength="40" required>
+        </div>
+        <div>
+          <label for="rApellido">Apellido</label>
+          <input type="text" id="rApellido" autocomplete="family-name" maxlength="40" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="rTelefono">Teléfono celular</label>
+        <input type="tel" id="rTelefono" autocomplete="tel" inputmode="tel" maxlength="20" placeholder="Ej: 3482 123456" required>
+        <div class="label-ayuda">Con característica, sin 0 ni 15.</div>
+      </div>
+      <p class="registro-error" id="rError" aria-live="polite"></p>
+      <button type="submit" class="btn btn-submit">Ingresar</button>
+    </form>
   </div>
 
-</div>
+  <!-- SEGUIMIENTO DEL ÚLTIMO REPORTE -->
+  <div class="seguimiento" id="seguimiento" hidden>
+    <button type="button" class="seg-cerrar" id="segCerrar" aria-label="Ocultar">✕</button>
+    <div class="seg-titulo">Tu último reporte</div>
+    <div class="seg-desc" id="segDesc"></div>
+    <div class="seg-pasos">
+      <span class="seg-paso">Enviado</span>
+      <span class="seg-paso">En camino</span>
+      <span class="seg-paso">Completado</span>
+    </div>
+    <div class="seg-estado" id="segEstado" aria-live="polite"></div>
+  </div>
 
-  
-   <div class="card">
-      
-      <div id="alert" class="alert"></div>
+  <div class="card" id="formCard">
+    <form id="reporteForm" novalidate>
 
-      <form id="reporteForm">
-        
-        <!-- Tipo de animal -->
-        <div class="form-group">
-          <label>🦎 Tipo de animal</label>
+      <!-- Quién reporta (se carga una sola vez) -->
+      <div class="usuario-bar">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+        <div class="usuario-datos"><b id="uNombre"></b><span id="uTel"></span></div>
+        <button type="button" class="usuario-cambiar" id="btnCambiarDatos">Cambiar</button>
+      </div>
+
+      <!-- Tipo de animal -->
+      <div class="form-group">
+        <label for="tipoAnimal">Tipo de animal</label>
+        <div>
           <select id="tipoAnimal" required>
             <option value="">Seleccioná una opción</option>
-            <option value="reptiles">🐍 Reptiles</option>
-            <option value="artropodos">🐞 Insectos/Artrópodos</option>
-            <option value="anfibios">🐢 Anfibios</option>
+            <option value="reptiles">🐍 Reptiles (víboras, lagartos, tortugas)</option>
+            <option value="artropodos">🐞 Insectos / Artrópodos</option>
+            <option value="anfibios">🐸 Anfibios (ranas, sapos)</option>
             <option value="aves">🦅 Aves</option>
             <option value="mamiferos">🦊 Mamíferos</option>
             <option value="otro">🚫🐾 Animal muerto</option>
           </select>
         </div>
+      </div>
 
+      <!-- Descripción: escrita o en audio -->
       <div class="form-group">
-
-  <div class="fila-descripcion">
-    <label>📝 Descripción del avistamiento</label>
-
-    <button type="button" class="btn-audio" onclick="grabarAudio()">
-      🎤 Grabar Audio (OPCIONAL)
-    </button>
-  </div>
-
-  <textarea id="descripcion" placeholder="Ej: Víboras en el patio trasero..."></textarea>
-
-  <div id="audioPreview"></div>
-
-</div>
-
-        <!-- Nivel de urgencia -->
-        <div class="form-group">
-          <label>⚠️ Nivel de urgencia</label>
-          <select id="urgencia" required>
-            <option value="baja">🟢 Baja - Solo avistamiento</option>
-            <option value="media">🟡 Media - Animal cerca de personas</option>
-            <option value="alta">🔴 Alta - Situación de riesgo</option>
-           <option value="muerto">⚫ Animal Muerto</option>
-          </select>
-        </div>
-
-        <!-- Datos de contacto -->
-        <div class="form-group">
-          <label>👤 Tu nombre </label>
-          <input type="text" id="nombre" placeholder="Nombre y apellido">
-        </div>
-
-        <div class="form-group">
-          <label>📱 Teléfono de contacto </label>
-          <input type="tel" id="telefono" placeholder="Ej: 3482-123456">
-        </div>
-
-        <!-- Selector de tipo de media -->
-<div class="form-group">
-  <label>Seleccionar... <span class="optional-badge">ENVÍO OBLIGATORIO</span></label>
-
-  <!-- BOTONES FOTO / VIDEO -->
-  <div class="media-type-selector">
-    <button type="button" class="media-type-btn active" data-type="foto">
-      📷 Foto
-    </button>
-    <button type="button" class="media-type-btn" data-type="video">
-      🎥 Video
-    </button>
-  </div>
-
-  <!-- INPUT OCULTO -->
-  <input type="file" id="mediaInput" style="display:none;">
-
-
-  <!-- PREVIEW -->
-  <div id="mediaPreview" class="media-preview"></div>
-</div>
-
-        <!-- Ubicación -->
-        <div class="form-group">
-          <button type="button" class="btn btn-location" onclick="obtenerUbicacion()">
-            📍 Obtener Mi Ubicación
+        <div class="fila-label">
+          <label for="descripcion">Contanos qué pasa <span class="label-ayuda">escribí o grabá un audio</span></label>
+          <button type="button" id="btnAudio" class="btn-audio" onclick="grabarAudio()">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+            <span>Audio</span>
           </button>
-          <div id="ubicacionInfo" class="ubicacion-info"></div>
+        </div>
+        <textarea id="descripcion" maxlength="1000" placeholder="Ej: Víbora en el patio trasero, cerca del tanque..."></textarea>
+        <div id="audioPreview"></div>
+      </div>
+
+      <!-- Urgencia -->
+      <div class="form-group">
+        <label for="urgencia">Nivel de urgencia</label>
+        <select id="urgencia" required>
+          <option value="baja">🟢 Baja · Solo avistamiento</option>
+          <option value="media">🟡 Media · Animal cerca de personas</option>
+          <option value="alta">🔴 Alta · Situación de riesgo</option>
+          <option value="muerto">⚫ Animal muerto</option>
+        </select>
+      </div>
+
+      <!-- Foto (obligatoria) / Video (opcional) -->
+      <div class="form-group">
+        <div class="media-grid">
+          <span class="badge-media obligatorio">OBLIGATORIO</span>
+          <span class="badge-media opcional">OPCIONAL</span>
+          <button type="button" id="btnFoto" class="media-btn">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+            <span>Foto</span>
+          </button>
+          <button type="button" id="btnVideo" class="media-btn">
+            <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3z"/></svg>
+            <span>Video</span>
+          </button>
         </div>
 
-        <!-- Submit -->
-        <button type="submit" class="btn btn-submit" id="btnSubmit">
-          🚀 Enviar Reporte
+        <input type="file" id="fotoInput" accept="image/*" hidden>
+        <input type="file" id="videoInput" accept="video/*" hidden>
+
+        <div id="fotoPreview" class="media-preview"></div>
+        <div id="videoPreview" class="media-preview"></div>
+      </div>
+
+      <!-- Ubicación: se busca sola al abrir la app -->
+      <div class="form-group ubicacion-fila">
+        <div id="ubicacionInfo" class="ubicacion-info" aria-live="polite">📍 Buscando tu ubicación…</div>
+        <button type="button" class="btn-ubicacion" id="btnUbicacion" onclick="obtenerUbicacion()" aria-label="Volver a buscar la ubicación">
+          <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          <span>Actualizar</span>
         </button>
+      </div>
 
-        <div class="loading" id="loading">
-          <div class="spinner"></div>
-          <p>Enviando reporte...</p>
-        </div>
+      <!-- Enviar -->
+      <button type="submit" class="btn btn-submit" id="btnSubmit">
+        <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l16-8-6 16-3-7z"/></svg>
+        Enviar reporte
+      </button>
 
-      </form>
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p id="loadingTexto">Enviando reporte...</p>
+      </div>
 
-    </div>
+    </form>
   </div>
+
+  <!-- ============================================ -->
+  <!-- INSTALAR APP -->
+  <!-- ============================================ -->
+  <div class="instalar" id="instalar">
+    <p id="instalarTexto">Instalá la app en tu celular para tenerla siempre a mano.</p>
+    <button type="button" id="btnInstalar">Instalar</button>
+    <button type="button" class="cerrar-instalar" id="cerrarInstalar" aria-label="Cerrar">✕</button>
+  </div>
+
+  <!-- ============================================ -->
+  <!-- NOS ACOMPAÑAN (se cargan desde el panel → Publicidades) -->
+  <!-- ============================================ -->
+  <div id="acompanan"></div>
+
+</div>
+
+<!-- ============================================ -->
+<!-- GRACIAS POR REPORTAR -->
+<!-- ============================================ -->
+<div id="gracias" role="dialog" aria-modal="true" aria-labelledby="graciasTitulo">
+  <div class="gracias-caja">
+    <svg class="gracias-garza" viewBox="0 0 120 120" aria-hidden="true">
+      <circle cx="60" cy="60" r="58" fill="#0F3B47"/>
+      <circle cx="40" cy="40" r="14" fill="#F2E8CF"/>
+      <path d="M58 88 L56 106 M68 88 L70 106" stroke="#7FB069" stroke-width="3"/>
+      <g fill="#F2E8CF"><ellipse cx="62" cy="80" rx="20" ry="9" transform="rotate(-12 62 80)"/>
+      <path d="M77 74C85 58 77 46 84 34L88 36C84 48 92 60 82 77Z"/><circle cx="87" cy="32" r="5"/><path d="M90 30L108 33L90 34Z"/></g>
+    </svg>
+    <h2 id="graciasTitulo">¡Gracias por tu reporte!</h2>
+    <p>Lo recibimos. Un rescatista de Fauna Santa Fe lo va a revisar y, si hace falta, va al lugar.</p>
+    <p class="gracias-tip">Mientras tanto, mantené distancia del animal y no intentes agarrarlo. Cuando el rescatista tome tu reporte, te va a aparecer un aviso acá.</p>
+    <button type="button" class="btn btn-submit" id="graciasOk">Aceptar</button>
+  </div>
+</div>
+
+<!-- AVISO: el rescatista tomó / completó el reporte -->
+<div id="avisoEstado" role="dialog" aria-modal="true" aria-labelledby="avisoTitulo">
+  <div class="gracias-caja">
+    <div class="aviso-icono" id="avisoIcono">🚐</div>
+    <h2 id="avisoTitulo">¡Tu reporte fue recibido!</h2>
+    <p id="avisoTexto"></p>
+    <button type="button" class="btn btn-submit" id="avisoOk">Aceptar</button>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -553,429 +700,602 @@
 // ============================================
 // CONFIGURACIÓN DE SUPABASE
 // ============================================
-// ⚠️ REEMPLAZÁ ESTOS VALORES CON TUS CREDENCIALES
 const SUPABASE_URL = 'https://iilefvoxigwozzbzgdzb.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpbGVmdm94aWd3b3p6YnpnZHpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2MzE4MTAsImV4cCI6MjA3ODIwNzgxMH0.NK5fR9dsYMlweLAICf4ZWIUVcusho1z3kW0AAfzXwqc';
 
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// si no cargó la librería (sin señal al abrir), la app igual se muestra y avisa al enviar
+const supabaseClient = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+const BUCKET = 'fauna-media';
+const MAX_MB = 50;
+const AUDIO_MAX_SEG = 120;   // el audio se corta solo a los 2 minutos
+const FOTO_MAX_LADO = 1600;  // las fotos se achican a 1600 px antes de subir
 
 // ============================================
-// VARIABLES GLOBALES
+// ESTADO
 // ============================================
 let lat = null;
 let lon = null;
-let mediaFile = null;
-let audioFile = null;  // ← NUEVA: archivo de audio separado
-let mediaType = 'foto'; // 'foto' o 'video'
+let precisionGps = null;
+let fotoFile = null;
+let videoFile = null;
+let audioFile = null;
+let audioExt = 'webm';
 
 // ============================================
-// SELECTOR DE TIPO DE MEDIA
-// ============================================
-document.querySelectorAll('.media-type-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-
-    // Activar botón visual
-    document.querySelectorAll('.media-type-btn').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
-
-    mediaType = this.dataset.type;
-mediaFile = null;
-
-    const input = document.getElementById('mediaInput');
-
-    // Definir tipo
-    if (mediaType === 'foto') {
-  input.accept = 'image/*';
-  input.removeAttribute('capture'); // ✔ permite cámara + galería
-} else {
-  input.accept = 'video/*';
-  input.removeAttribute('capture');
-}
-
-    // 🔥 ABRIR CÁMARA / ARCHIVO DIRECTO
-    input.click();
-
-    // Limpiar preview anterior
-   const preview = document.getElementById('mediaPreview');
-
-// SOLO limpiar si NO hay audio cargado
-if (!mediaFile || mediaType !== 'audio') {
-  preview.style.display = 'none';
-  preview.innerHTML = '';
-  mediaFile = null;
-}
-
-  });
-});
-
-// ============================================
-// PREVIEW DE FOTO/VIDEO
-// ============================================
-document.getElementById('mediaInput').addEventListener('change', function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  mediaFile = file;
-  const preview = document.getElementById('mediaPreview');
-  const reader = new FileReader();
-
-  reader.onload = function(event) {
-    if (file.type.startsWith('image/')) {
-      preview.innerHTML = `<img src="${event.target.result}" alt="Preview">`;
-    } else if (file.type.startsWith('video/')) {
-      preview.innerHTML = `<video controls src="${event.target.result}"></video>`;
-    }
-    preview.style.display = 'block';
-  };
-
-  reader.readAsDataURL(file);
-});
-
-// ============================================
-// OBTENER UBICACIÓN GPS
-// ============================================
-function obtenerUbicacion(){
-  const info = document.getElementById('ubicacionInfo');
-  info.style.display = 'block';
-  info.innerHTML = '🔄 Buscando ubicación precisa...';
-
-  let mejorPrecision = Infinity;
-  let mejorLat = null;
-  let mejorLon = null;
-
-  const watchId = navigator.geolocation.watchPosition(
-    (position) => {
-
-      const accuracy = position.coords.accuracy;
-
-      // Guardar la mejor ubicación encontrada
-      if (accuracy < mejorPrecision) {
-        mejorPrecision = accuracy;
-        mejorLat = position.coords.latitude;
-        mejorLon = position.coords.longitude;
-      }
-
-      // Mostrar en pantalla
-      info.innerHTML = `
-        📡 Mejorando precisión...<br>
-        Precisión: ${accuracy.toFixed(0)} metros<br><br>
-        Lat: ${position.coords.latitude.toFixed(6)}<br>
-        Lon: ${position.coords.longitude.toFixed(6)}
-      `;
-
-      // Si ya es buena precisión, cortar
-      if (accuracy < 15) {
-        finalizarUbicacion();
-      }
-
-    },
-    (error) => {
-      info.innerHTML = "❌ No se pudo obtener ubicación";
-      alert("Error obteniendo ubicación");
-    },
-    {
-      enableHighAccuracy: true,
-      maximumAge: 0,
-      timeout: 20000
-    }
-  );
-
-  function finalizarUbicacion() {
-    navigator.geolocation.clearWatch(watchId);
-
-    lat = mejorLat;
-    lon = mejorLon;
-
-    info.innerHTML = `
-      ✅ Ubicación precisa obtenida<br>
-      Precisión: ${mejorPrecision.toFixed(0)} metros<br><br>
-      Lat: ${lat.toFixed(6)}<br>
-      Lon: ${lon.toFixed(6)}
-    `;
-  }
-
-  // Backup: cortar a los 10 segundos sí o sí
-  setTimeout(() => {
-    if (mejorLat !== null) {
-      finalizarUbicacion();
-    }
-  }, 10000);
-}
-
-// ============================================
-// MOSTRAR ALERTAS
+// AVISOS
 // ============================================
 function mostrarAlerta(mensaje, tipo = 'success') {
-
   const alerta = document.createElement('div');
   alerta.textContent = mensaje;
-
   alerta.className = `alerta-bottom ${tipo}`;
-
+  alerta.setAttribute('role', tipo === 'error' ? 'alert' : 'status');
   document.body.appendChild(alerta);
 
   setTimeout(() => {
     alerta.classList.add('ocultar');
     setTimeout(() => alerta.remove(), 500);
-  }, 10000);
+  }, tipo === 'error' ? 6000 : 8000);
+}
+
+function mostrarMensajeRecibido() {
+  const cartel = document.createElement('div');
+  cartel.className = 'cartel-recibido';
+  cartel.setAttribute('role', 'status');
+  cartel.innerHTML = '<div style="font-size:26px; margin-bottom:4px;">✓</div><div>Tu reporte fue recibido.<br>Un rescatista va en camino.</div>';
+  document.body.appendChild(cartel);
+  if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
+
+  setTimeout(() => {
+    cartel.style.opacity = '0';
+    setTimeout(() => cartel.remove(), 500);
+  }, 6000);
+}
+
+// Ventana de agradecimiento después de enviar
+function mostrarGracias() {
+  const m = document.getElementById('gracias');
+  m.classList.add('abierto');
+  if (navigator.vibrate) navigator.vibrate(120);
+  setTimeout(() => document.getElementById('graciasOk').focus(), 50);
+}
+function cerrarGracias() {
+  document.getElementById('gracias').classList.remove('abierto');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (leerMisDatos() && lat === null) obtenerUbicacion();   // deja lista la ubicación para el próximo reporte
+}
+document.getElementById('graciasOk').addEventListener('click', cerrarGracias);
+document.getElementById('gracias').addEventListener('click', e => { if (e.target.id === 'gracias') cerrarGracias(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarGracias(); });
+
+// ============================================
+// QUIÉN REPORTA: se pide una sola vez y queda guardado en el celular
+// ============================================
+function leerMisDatos() {
+  try {
+    const d = JSON.parse(localStorage.getItem('misDatos') || 'null');
+    if (d && d.nombre && d.apellido && d.telefono) return d;
+  } catch (e) {}
+  return null;
+}
+function mostrarRegistro() {
+  const d = leerMisDatos() || {};
+  document.getElementById('rNombre').value = d.nombre || '';
+  document.getElementById('rApellido').value = d.apellido || '';
+  document.getElementById('rTelefono').value = d.telefono || '';
+  document.getElementById('rError').textContent = '';
+  document.getElementById('registro').hidden = false;
+  document.body.classList.add('sin-registro');
+  window.scrollTo({ top: 0 });
+}
+function mostrarFormulario() {
+  const d = leerMisDatos();
+  document.getElementById('uNombre').textContent = d.nombre + ' ' + d.apellido;
+  document.getElementById('uTel').textContent = '📱 ' + d.telefono;
+  document.getElementById('registro').hidden = true;
+  document.body.classList.remove('sin-registro');
+  if (lat === null) obtenerUbicacion();
+}
+document.getElementById('registroForm').addEventListener('submit', e => {
+  e.preventDefault();
+  const nombre = document.getElementById('rNombre').value.trim();
+  const apellido = document.getElementById('rApellido').value.trim();
+  const telefono = document.getElementById('rTelefono').value.trim();
+  const err = document.getElementById('rError');
+  const digitos = telefono.replace(/\D/g, '');
+  if (!nombre) { err.textContent = 'Escribí tu nombre.'; document.getElementById('rNombre').focus(); return; }
+  if (!apellido) { err.textContent = 'Escribí tu apellido.'; document.getElementById('rApellido').focus(); return; }
+  if (digitos.length < 10 || digitos.length > 13) {
+    err.textContent = 'Revisá el teléfono: tiene que tener la característica y el número (10 números, ej: 3482 123456).';
+    document.getElementById('rTelefono').focus(); return;
+  }
+  try { localStorage.setItem('misDatos', JSON.stringify({ nombre, apellido, telefono })); } catch (e2) {}
+  mostrarFormulario();
+});
+document.getElementById('btnCambiarDatos').addEventListener('click', mostrarRegistro);
+
+// ============================================
+// FOTO Y VIDEO
+// ============================================
+function configurarMedia(tipo) {
+  const boton   = document.getElementById(tipo === 'foto' ? 'btnFoto' : 'btnVideo');
+  const input   = document.getElementById(tipo === 'foto' ? 'fotoInput' : 'videoInput');
+  const preview = document.getElementById(tipo === 'foto' ? 'fotoPreview' : 'videoPreview');
+  const texto   = boton.querySelector('span');
+  const textoOriginal = texto.textContent;
+
+  boton.addEventListener('click', () => input.click());
+
+  input.addEventListener('change', () => {
+    const file = input.files[0];
+    if (!file) return;
+
+    if (file.size > MAX_MB * 1024 * 1024) {
+      mostrarAlerta(`El archivo pesa más de ${MAX_MB} MB. Probá con uno más corto.`, 'error');
+      input.value = '';
+      return;
+    }
+
+    if (tipo === 'foto') fotoFile = file; else videoFile = file;
+
+    const url = URL.createObjectURL(file);
+    preview.innerHTML = tipo === 'foto'
+      ? `<img src="${url}" alt="Foto adjunta">`
+      : `<video src="${url}" controls playsinline preload="metadata"></video>`;
+    preview.style.display = 'block';
+
+    texto.textContent = tipo === 'foto' ? 'Foto lista ✓' : 'Video listo ✓';
+    boton.classList.add('cargado');
+  });
+
+  return () => {
+    input.value = '';
+    preview.innerHTML = '';
+    preview.style.display = 'none';
+    texto.textContent = textoOriginal;
+    boton.classList.remove('cargado');
+  };
+}
+
+const limpiarFoto  = configurarMedia('foto');
+const limpiarVideo = configurarMedia('video');
+
+// Achica la foto antes de subirla (sube más rápido con datos móviles).
+// Si el navegador no puede leerla (por ejemplo HEIC en Android), sube la original.
+async function comprimirFoto(file) {
+  try {
+    const bitmap = await createImageBitmap(file);
+    const escala = Math.min(1, FOTO_MAX_LADO / Math.max(bitmap.width, bitmap.height));
+    if (escala === 1 && file.size < 1.5 * 1024 * 1024) return file;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(bitmap.width * escala);
+    canvas.height = Math.round(bitmap.height * escala);
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.82));
+    return blob ? new File([blob], 'foto.jpg', { type: 'image/jpeg' }) : file;
+  } catch (e) {
+    return file;
+  }
+}
+
+// ============================================
+// AUDIO
+// ============================================
+let mediaRecorder = null;
+let audioChunks = [];
+let grabando = false;
+let corteAudio = null;
+
+function textoAudio(t) {
+  document.querySelector('#btnAudio span').textContent = t;
+}
+
+async function grabarAudio() {
+  const btn = document.getElementById('btnAudio');
+
+  if (grabando) {
+    mediaRecorder.stop();
+    return;
+  }
+
+  if (!window.MediaRecorder || !navigator.mediaDevices) {
+    mostrarAlerta('Este celular no permite grabar audio desde la app. Escribí la descripción.', 'error');
+    return;
+  }
+
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch (e) {
+    mostrarAlerta('No se pudo usar el micrófono. Revisá los permisos del navegador.', 'error');
+    return;
+  }
+
+  mediaRecorder = new MediaRecorder(stream);
+  audioChunks = [];
+
+  mediaRecorder.ondataavailable = e => { if (e.data.size) audioChunks.push(e.data); };
+
+  mediaRecorder.onstop = () => {
+    clearTimeout(corteAudio);
+    // iPhone graba en mp4, Android/PC en webm: usamos el formato real
+    const tipo = mediaRecorder.mimeType || 'audio/webm';
+    audioExt = tipo.includes('mp4') ? 'm4a' : tipo.includes('ogg') ? 'ogg' : 'webm';
+    audioFile = new Blob(audioChunks, { type: tipo });
+
+    stream.getTracks().forEach(t => t.stop()); // apagar el micrófono
+
+    document.getElementById('audioPreview').innerHTML =
+      `<audio controls src="${URL.createObjectURL(audioFile)}"></audio>`;
+
+    textoAudio('Listo ✓');
+    btn.classList.remove('grabando');
+    btn.classList.add('listo');
+    grabando = false;
+  };
+
+  mediaRecorder.start();
+  grabando = true;
+  textoAudio('Detener');
+  btn.classList.remove('listo');
+  btn.classList.add('grabando');
+  corteAudio = setTimeout(() => { if (grabando) mediaRecorder.stop(); }, AUDIO_MAX_SEG * 1000);
+}
+
+function limpiarAudio() {
+  audioFile = null;
+  document.getElementById('audioPreview').innerHTML = '';
+  textoAudio('Audio');
+  document.getElementById('btnAudio').classList.remove('grabando', 'listo');
+}
+
+// ============================================
+// UBICACIÓN GPS
+// ============================================
+let buscandoUbicacion = null;
+function obtenerUbicacion() {
+  if (buscandoUbicacion) return buscandoUbicacion;
+  const info = document.getElementById('ubicacionInfo');
+  info.classList.remove('error');
+  info.classList.add('buscando');
+
+  if (!navigator.geolocation) {
+    info.classList.remove('buscando'); info.classList.add('error');
+    info.textContent = 'Este celular no permite obtener la ubicación.';
+    return Promise.resolve(false);
+  }
+
+  info.textContent = '📍 Buscando tu ubicación…';
+
+  buscandoUbicacion = new Promise(resolve => {
+    let mejorPrecision = Infinity, mejorLat = null, mejorLon = null, terminado = false;
+
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        const precision = position.coords.accuracy;
+        if (precision < mejorPrecision) {
+          mejorPrecision = precision;
+          mejorLat = position.coords.latitude;
+          mejorLon = position.coords.longitude;
+        }
+        info.textContent = `📍 Mejorando precisión… (${precision.toFixed(0)} m)`;
+        if (precision < 15) finalizar();
+      },
+      (err) => {
+        if (terminado) return;
+        if (mejorLat !== null) return finalizar();   // ya teníamos una: usamos esa
+        terminado = true;
+        navigator.geolocation.clearWatch(watchId);
+        info.classList.remove('buscando'); info.classList.add('error');
+        info.textContent = err.code === 1
+          ? '📍 Necesitamos permiso de ubicación. Activalo en el navegador y tocá «Actualizar».'
+          : '📍 No se pudo obtener la ubicación. Activá el GPS y tocá «Actualizar».';
+        buscandoUbicacion = null;
+        resolve(false);
+      },
+      { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 }
+    );
+
+    function finalizar() {
+      if (terminado) return;
+      terminado = true;
+      navigator.geolocation.clearWatch(watchId);
+      lat = mejorLat;
+      lon = mejorLon;
+      precisionGps = Math.round(mejorPrecision);
+      info.classList.remove('buscando');
+      info.textContent = `📍 Ubicación lista ✓ (precisión ${precisionGps} m)`;
+      buscandoUbicacion = null;
+      resolve(true);
+    }
+
+    // a los 10 segundos nos quedamos con la mejor que haya
+    setTimeout(() => { if (mejorLat !== null) finalizar(); }, 10000);
+  });
+  return buscandoUbicacion;
+}
+
+// ============================================
+// SUBIR ARCHIVOS
+// ============================================
+function extensionDe(file, porDefecto) {
+  const partes = (file.name || '').split('.');
+  return partes.length > 1 ? partes.pop().toLowerCase() : porDefecto;
+}
+
+async function subirArchivo(archivo, prefijo, extension) {
+  const ruta = `reportes/${prefijo}_${Date.now()}_${crypto.randomUUID().slice(0, 8)}.${extension}`;
+
+  const { error } = await supabaseClient.storage
+    .from(BUCKET)
+    .upload(ruta, archivo, { contentType: archivo.type || undefined });
+
+  if (error) throw error;
+
+  return supabaseClient.storage.from(BUCKET).getPublicUrl(ruta).data.publicUrl;
 }
 
 // ============================================
 // ENVIAR REPORTE
 // ============================================
-document.getElementById('reporteForm').addEventListener('submit', async function(e) {
+document.getElementById('reporteForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
-const descripcion = document.getElementById('descripcion').value;
+  if (!document.getElementById('tipoAnimal').value) {
+    mostrarAlerta('Elegí el tipo de animal.', 'error');
+    document.getElementById('tipoAnimal').focus();
+    return;
+  }
 
-if (!descripcion && !mediaFile && !audioFile) {
-  mostrarAlerta('⚠️ Escribí una descripción, adjuntá foto/video o grabá audio', 'error');
-  return;
-}
+  if (!fotoFile) {
+    mostrarAlerta('La foto es obligatoria. Sacá o elegí una foto del animal.', 'error');
+    return;
+  }
 
-  // Validaciones
-  if (!lat || !lon) {
-    mostrarAlerta('⚠️ Por favor obtené tu ubicación primero', 'error');
+  if (lat === null || lon === null) {
+    // si todavía no está, la espera (o la vuelve a buscar) antes de enviar
+    mostrarAlerta('Buscando tu ubicación, un momento…');
+    const ok = await obtenerUbicacion();
+    if (!ok) {
+      mostrarAlerta('No pudimos obtener tu ubicación. Activá el GPS y tocá «Actualizar».', 'error');
+      return;
+    }
+  }
+
+  if (!navigator.onLine || !supabaseClient) {
+    mostrarAlerta('No hay conexión a internet. Revisá los datos o el wifi y probá de nuevo.', 'error');
     return;
   }
 
   const btnSubmit = document.getElementById('btnSubmit');
   const loading = document.getElementById('loading');
-
+  const loadingTexto = document.getElementById('loadingTexto');
   btnSubmit.disabled = true;
   loading.style.display = 'block';
 
-  
-try {
-  let mediaUrl = null;
-  let audioUrl = null;
+  try {
+    loadingTexto.textContent = 'Subiendo foto...';
+    const foto = await comprimirFoto(fotoFile);
+    const fotoUrl = await subirArchivo(foto, 'foto', foto === fotoFile ? extensionDe(fotoFile, 'jpg') : 'jpg');
 
-  // ============================================
-  // SUBIR FOTO/VIDEO SI HAY
-  // ============================================
-  if (mediaFile) {
-    const timestamp = Date.now();
-    const extension = mediaFile.name.split('.').pop();
-    const fileName = `${mediaType}_${timestamp}.${extension}`;
-    const filePath = `reportes/${fileName}`;
-
-    const { data: uploadData, error: uploadError } = await supabaseClient.storage
-      .from('fauna-media')
-      .upload(filePath, mediaFile);
-
-    if (uploadError) throw uploadError;
-
-    const { data: urlData } = supabaseClient.storage
-      .from('fauna-media')
-      .getPublicUrl(filePath);
-
-    mediaUrl = urlData.publicUrl;
-  }
-
-  // ============================================
-  // SUBIR AUDIO SI HAY
-  // ============================================
-  if (audioFile) {
-    const timestamp = Date.now();
-    const fileName = `audio_${timestamp}.webm`;
-    const filePath = `reportes/${fileName}`;
-
-    const { data: uploadData, error: uploadError } = await supabaseClient.storage
-      .from('fauna-media')
-      .upload(filePath, audioFile);
-
-    if (uploadError) throw uploadError;
-
-    const { data: urlData } = supabaseClient.storage
-      .from('fauna-media')
-      .getPublicUrl(filePath);
-
-    audioUrl = urlData.publicUrl;
-  }
-
-    // ============================================
-    // GUARDAR REPORTE EN LA BASE DE DATOS
-    // ============================================
-const { data, error } = await supabaseClient
-  .from('reportes-fauna')
-  .insert([
-    {
-      tipo_animal: document.getElementById('tipoAnimal').value,
-      descripcion: document.getElementById('descripcion').value,
-      urgencia: document.getElementById('urgencia').value,
-      nombre_reportante: document.getElementById('nombre').value || null,
-      telefono: document.getElementById('telefono').value || null,
-      lat: lat,
-      lon: lon,
-      media_url: mediaUrl,
-      audio_url: audioUrl,  // ← NUEVO CAMPO
-      media_tipo: mediaType || null,
-      estado: 'pendiente',
-      fecha: new Date().toISOString()
+    let videoUrl = null;
+    if (videoFile) {
+      loadingTexto.textContent = 'Subiendo video (puede tardar)...';
+      videoUrl = await subirArchivo(videoFile, 'video', extensionDe(videoFile, 'mp4'));
     }
-  ])
-   .select(); // 👈 ESTO ES CLAVE;
 
-if (error) {
-  alert("Error al enviar reporte");
-  return;
-}
+    let audioUrl = null;
+    if (audioFile) {
+      loadingTexto.textContent = 'Subiendo audio...';
+      audioUrl = await subirArchivo(audioFile, 'audio', audioExt);
+    }
 
-// 👇 AGARRA EL ID DEL REPORTE
-const idReporte = data[0].id;
+    loadingTexto.textContent = 'Enviando reporte...';
+    const codigo = crypto.randomUUID();
+    const misDatos = leerMisDatos() || {};
+    const nombre = [misDatos.nombre, misDatos.apellido].filter(Boolean).join(' ');
+    const telefono = misDatos.telefono || '';
 
-// 👇 LO GUARDA EN EL CELULAR
-localStorage.setItem("miReporteId", idReporte);
+    const { error } = await supabaseClient
+      .from('reportes-fauna')
+      .insert([{
+        tipo_animal: document.getElementById('tipoAnimal').value,
+        descripcion: document.getElementById('descripcion').value.trim() || null,
+        urgencia: document.getElementById('urgencia').value,
+        nombre_reportante: nombre || null,
+        telefono: telefono || null,
+        lat: lat,
+        lon: lon,
+        media_url: fotoUrl,
+        media_tipo: 'foto',
+        video_url: videoUrl,
+        audio_url: audioUrl,
+        estado: 'pendiente',
+        codigo_seguimiento: codigo
+      }]);
 
-console.log("ID guardado:", idReporte);
+    if (error) throw error;
 
-    // ============================================
-    // ÉXITO
-    // ============================================
-    mostrarAlerta('✅ ¡Reporte enviado correctamente! Guardafauna lo recibirá pronto.', 'success');
-    
-      // Limpiar formulario
-	document.getElementById('reporteForm').reset();
-	document.getElementById('mediaPreview').style.display = 'none';
-document.getElementById('audioPreview').innerHTML = '';
-	document.getElementById('ubicacionInfo').style.display = 'none';
-	lat = null;
-	lon = null;
-	mediaFile = null;
-	audioFile = null;  // ← Limpiar audio también
+    try {
+      localStorage.setItem('miReporte', JSON.stringify({ codigo, estado: 'pendiente', animal: document.getElementById('tipoAnimal').selectedOptions[0].textContent, descripcion: document.getElementById('descripcion').value.trim(), fecha: new Date().toISOString() }));
+      localStorage.removeItem('miReporteCodigo');
+    } catch (err) {}
+    iniciarSeguimiento();
 
-    const btn = document.querySelector('.btn-audio');
-btn.textContent = "🎤 Grabar Audio (OPCIONAL)";
-btn.style.background = "#4CAF50";
+    mostrarGracias();
 
-    
-   
-    
+    // limpiar (nombre y teléfono quedan para el próximo reporte)
+    document.getElementById('tipoAnimal').value = '';
+    document.getElementById('descripcion').value = '';
+    document.getElementById('urgencia').value = 'baja';
+    lat = null;
+    lon = null;
+    precisionGps = null;
+    fotoFile = null;
+    videoFile = null;
+    limpiarFoto();
+    limpiarVideo();
+    limpiarAudio();
+
   } catch (error) {
     console.error('Error:', error);
-    mostrarAlerta('❌ Error al enviar: ' + error.message, 'error');
+    mostrarAlerta('No se pudo enviar: ' + (error.message || 'error desconocido') + '. Probá de nuevo.', 'error');
   } finally {
     btnSubmit.disabled = false;
     loading.style.display = 'none';
   }
 });
 
-let mediaRecorder;
-let audioChunks = [];
-let grabando = false;
+// ============================================
+// SEGUIMIENTO DEL REPORTE
+// Una tarjeta arriba del formulario muestra en qué estado está el último reporte.
+// Se revisa al abrir la app, al volver a ella y cada 15 segundos mientras está abierta.
+// Cuando el rescatista lo toma (📩) o lo completa (✅) aparece una ventana que
+// queda hasta que la persona toca «Aceptar» (antes duraba 6 segundos y se perdía).
+// ============================================
+let intervaloSeguimiento = null;
+const PASOS = ['pendiente', 'en-proceso', 'completado'];
 
-async function grabarAudio() {
-  const btn = document.querySelector('.btn-audio');
+function leerMiReporte() {
+  try {
+    const r = JSON.parse(localStorage.getItem('miReporte') || 'null');
+    if (r && r.codigo) return r;
+    const viejo = localStorage.getItem('miReporteCodigo');   // reportes enviados con la versión anterior
+    if (viejo) return { codigo: viejo, estado: 'pendiente' };
+  } catch (e) {}
+  return null;
+}
+function guardarMiReporte(r) { try { localStorage.setItem('miReporte', JSON.stringify(r)); } catch (e) {} }
 
-  if (!grabando) {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-    mediaRecorder = new MediaRecorder(stream);
-    audioChunks = [];
-
-    mediaRecorder.start();
-    grabando = true;
-
-    btn.textContent = "⏹️ Detener grabación";
-    btn.style.background = "#e53935";
-
-    mediaRecorder.ondataavailable = e => {
-      audioChunks.push(e.data);
-    };
-
-    mediaRecorder.onstop = () => {
-      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-      
-      audioFile = audioBlob;  // ← Guardar en variable separada
-      mediaType = 'audio';
-
-      // Preview opcional
-      const preview = document.getElementById('audioPreview');
-
-      const url = URL.createObjectURL(audioBlob);
-      
-      preview.innerHTML = `<audio controls src="${url}"></audio>`;
-      preview.style.display = 'block';
-
-
-      btn.textContent = "✅ Audio listo";
-      btn.style.background = "#4CAF50";
-
-      grabando = false;
-    };
-
-  } else {
-    mediaRecorder.stop();
-  }
+function pintarSeguimiento(r) {
+  const card = document.getElementById('seguimiento');
+  if (!r || r.oculto) { card.hidden = true; return; }
+  card.hidden = false;
+  document.getElementById('segDesc').textContent =
+    [r.animal, r.descripcion].filter(Boolean).join(' · ') || 'Reporte enviado';
+  const n = Math.max(0, PASOS.indexOf(r.estado));
+  card.querySelectorAll('.seg-paso').forEach((el, i) => {
+    el.classList.toggle('hecho', i <= n);
+    el.classList.toggle('actual', i === n);
+  });
+  const textos = {
+    'pendiente': 'Esperando que un rescatista lo tome…',
+    'en-proceso': 'Un rescatista tomó tu reporte y va en camino.',
+    'completado': 'Rescate completado. ¡Gracias por avisar!'
+  };
+  document.getElementById('segEstado').textContent = textos[r.estado] || '';
 }
 
-function mostrarMensajeRecibido() {
-  const cartel = document.createElement("div");
-
-  cartel.innerHTML = `
-    <div style="font-size:22px; margin-bottom:5px;">✅</div>
-    <div>Tu reporte fue Recibido</div>
-  `;
-
-  cartel.style.position = "fixed";
-  cartel.style.top = "30%";
-  cartel.style.left = "50%";
-  cartel.style.transform = "translate(-50%, -50%)";
-  cartel.style.background = "#4CAF50";
-  cartel.style.color = "white";
-  cartel.style.padding = "20px 30px";
-  cartel.style.borderRadius = "15px";
-  cartel.style.fontSize = "18px";
-  cartel.style.fontWeight = "bold";
-  cartel.style.boxShadow = "0 8px 25px rgba(0,0,0,0.3)";
-  cartel.style.zIndex = "9999";
-  cartel.style.textAlign = "center";
-
-  document.body.appendChild(cartel);
-
-  setTimeout(() => {
-    cartel.style.opacity = "0";
-    cartel.style.transition = "opacity 0.5s";
-    
-    setTimeout(() => {
-      cartel.remove();
-    }, 500);
-  }, 5000); // 👈 ahora dura 5 segundos
+function mostrarAvisoEstado(estado) {
+  const enProceso = estado === 'en-proceso';
+  document.getElementById('avisoIcono').textContent = enProceso ? '🚐' : '✅';
+  document.getElementById('avisoTitulo').textContent = enProceso ? '¡Tu reporte fue recibido!' : '¡Rescate completado!';
+  document.getElementById('avisoTexto').textContent = enProceso
+    ? 'Un rescatista de Fauna Santa Fe tomó tu reporte y va en camino. Mantené distancia del animal.'
+    : 'El equipo de rescate terminó de atender tu reporte. ¡Muchas gracias por cuidar la fauna!';
+  document.getElementById('avisoEstado').classList.add('abierto');
+  if (navigator.vibrate) navigator.vibrate([150, 80, 150]);
 }
+function cerrarAvisoEstado() { document.getElementById('avisoEstado').classList.remove('abierto'); }
+// (se mantiene por compatibilidad)
+function mostrarMensajeRecibido() { mostrarAvisoEstado('en-proceso'); }
 
-supabaseClient
-  .channel('realtime-reportes')
-  .on(
-    'postgres_changes',
-    {
-      event: 'UPDATE',
-      schema: 'public',
-      table: 'reportes-fauna'
-    },
-    (payload) => {
-
-  const miId = localStorage.getItem("miReporteId");
-
-  console.log("Mi ID:", miId);
-  console.log("ID que cambió:", payload.new.id);
-
-  // 👉 SI NO ES MI REPORTE → NO HACE NADA
-      if (!miId || payload.new.id != miId) return;
-
-  const nuevoEstado = payload.new.estado;
-
-  console.log("Estado recibido:", nuevoEstado);
-
-  // 🔥 ESTA ES LA CLAVE
-      if (nuevoEstado === 'en-proceso') {
-        mostrarMensajeRecibido();
-      }
-
+async function revisarEstado() {
+  const r = leerMiReporte();
+  if (!r || !supabaseClient || r.estado === 'completado') return;
+  try {
+    const { data: estado, error } = await supabaseClient.rpc('estado_reporte', { p_codigo: r.codigo });
+    if (error) { console.warn('Seguimiento:', error.message); return; }
+    if (!estado) return;
+    if (estado !== r.estado) {
+      r.estado = estado;
+      r.oculto = false;
+      guardarMiReporte(r);
+      if (estado === 'en-proceso' || estado === 'completado') mostrarAvisoEstado(estado);
     }
-  )
-  .subscribe();
+    pintarSeguimiento(r);
+    if (estado === 'completado') clearInterval(intervaloSeguimiento);
+  } catch (e) { console.warn('Seguimiento:', e); }
+}
+
+function iniciarSeguimiento() {
+  clearInterval(intervaloSeguimiento);
+  const r = leerMiReporte();
+  pintarSeguimiento(r);
+  if (!r || r.estado === 'completado') return;
+  revisarEstado();   // revisa ya, sin esperar
+  intervaloSeguimiento = setInterval(() => { if (!document.hidden) revisarEstado(); }, 15000);
+}
+
+document.addEventListener('visibilitychange', () => { if (!document.hidden) revisarEstado(); });
+window.addEventListener('online', revisarEstado);
+document.getElementById('avisoOk').addEventListener('click', cerrarAvisoEstado);
+document.getElementById('segCerrar').addEventListener('click', () => {
+  const r = leerMiReporte(); if (!r) return;
+  r.oculto = true; guardarMiReporte(r); pintarSeguimiento(r);
+});
+iniciarSeguimiento();
+
+// Al abrir: si es la primera vez pide los datos; si no, va directo al formulario y busca la ubicación sola
+if (leerMisDatos()) mostrarFormulario(); else mostrarRegistro();
+document.addEventListener('visibilitychange', () => { if (!document.hidden && leerMisDatos() && lat === null) obtenerUbicacion(); });
+
+// ============================================
+// PWA: instalar la app
+// ============================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(err => console.warn('SW:', err));
+  });
+}
+
+(function () {
+  const caja = document.getElementById('instalar');
+  const btn = document.getElementById('btnInstalar');
+  const texto = document.getElementById('instalarTexto');
+  let eventoInstalar = null;
+
+  const yaInstalada = window.matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+  let descartado = false;
+  try { descartado = localStorage.getItem('instalarCerrado') === '1'; } catch (e) {}
+  if (yaInstalada || descartado) return;
+
+  // Android / Chrome
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    eventoInstalar = e;
+    caja.classList.add('visible');
+  });
+
+  btn.addEventListener('click', async () => {
+    if (!eventoInstalar) return;
+    eventoInstalar.prompt();
+    await eventoInstalar.userChoice;
+    eventoInstalar = null;
+    caja.classList.remove('visible');
+  });
+
+  // iPhone: no hay botón automático, se explica cómo hacerlo
+  const esIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if (esIOS) {
+    texto.textContent = 'Para instalarla: tocá Compartir y después "Agregar a inicio".';
+    btn.style.display = 'none';
+    caja.classList.add('visible');
+  }
+
+  document.getElementById('cerrarInstalar').addEventListener('click', () => {
+    caja.classList.remove('visible');
+    try { localStorage.setItem('instalarCerrado', '1'); } catch (e) {}
+  });
+
+  window.addEventListener('appinstalled', () => caja.classList.remove('visible'));
+})();
 
 </script>
+
+<script src="acompanan.js"></script>
 
 </body>
 </html>

@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<!-- Busca el Carpincho · PANEL DEL JUEGO — © 2026 Macla-IA · Claudio Aldrian -->
+<!-- Estadísticas de los chicos que juegan + publicidades del juego.
+     Usa la misma base de Supabase y los mismos usuarios que el panel de Rescate Fauna.
+     Se guarda en la MISMA carpeta que panel.html (el botón «Juego Carpibocha» del panel lo abre),
+     pero es un archivo aparte: se edita en la conversación del juego, no en la de rescate. -->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>🎮 Panel del juego · Busca el Carpincho</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#eef3ec;color:#1f2a22}
+/* ---------- login ---------- */
+#loginScreen{min-height:100vh;background:linear-gradient(135deg,#0f2219 0%,#1f4a30 100%);display:none;align-items:center;justify-content:center;padding:20px}
+#loginScreen.abierto{display:flex}
+.login-card{background:#fff;padding:32px 28px;border-radius:18px;box-shadow:0 10px 40px rgba(0,0,0,.35);max-width:380px;width:100%;display:grid;gap:12px;text-align:center}
+.login-card img{width:110px;justify-self:center}
+.login-card h2{color:#1f4a30;font-size:20px}
+.login-card p{font-size:13px;color:#56655a}
+.login-input{width:100%;padding:13px;border:2px solid #d5ddd2;border-radius:10px;font-size:16px}
+.login-input:focus{outline:none;border-color:#2e7d32}
+.login-btn{padding:13px;background:#2e7d32;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer}
+.login-btn:disabled{opacity:.6;cursor:wait}
+.login-error{color:#c62828;font-size:14px;font-weight:600;min-height:1.2em}
+/* el panel del juego ocupa la página entera */
+/* ============================================ */
+/* JUEGO CARPIBOCHA · panel de datos            */
+/* ============================================ */
+.cb-abrir{padding:7px 11px;background:#f0bd5e;color:#2a1606;border:none;border-radius:6px;cursor:pointer;font-weight:700;box-shadow:0 3px 0 #8a5419}
+.cb-abrir:hover{background:#ffcf73}
+#cbPanel{position:fixed;inset:0;z-index:5000;background:#eef3ec;overflow-y:auto;display:none;font-family:'Segoe UI',Tahoma,sans-serif;color:#1f2a22}
+#cbPanel.abierto{display:block}
+.cb-top{position:sticky;top:0;z-index:2;background:#1f4a30;color:#fff;display:flex;align-items:center;gap:12px;padding:10px 16px;flex-wrap:wrap}
+.cb-top h2{font-size:20px;flex:1;min-width:200px}
+.cb-top small{display:block;font-size:12px;font-weight:400;opacity:.8}
+.cb-top button{padding:8px 12px;border:none;border-radius:6px;cursor:pointer;font-weight:700;font-size:13px}
+.cb-btn-claro{background:#ffffff26;color:#fff}
+.cb-btn-claro:hover{background:#ffffff40}
+.cb-btn-claro:disabled{opacity:.7;cursor:wait}
+.cb-btn-excel{background:#4caf50;color:#fff}
+.cb-btn-cerrar{background:#fff;color:#1f4a30}
+.cb-body{max-width:1300px;margin:0 auto;padding:14px 16px 40px;display:grid;gap:14px}
+.cb-estado{font-size:13px;color:#56655a}
+.cb-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.cb-kpi{background:#fff;border-radius:10px;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.cb-kpi span{display:block;font-size:13px;color:#56655a;font-weight:600}
+.cb-kpi b{display:block;font-size:28px;color:#1f4a30;font-variant-numeric:tabular-nums;margin-top:2px}
+.cb-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.cb-caja{background:#fff;border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08);min-width:0}
+.cb-caja h3{font-size:15px;margin-bottom:10px;color:#1f4a30}
+.cb-barra{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr) 44px;gap:8px;align-items:center;font-size:13px;margin-bottom:6px}
+.cb-barra .et{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cb-barra .pista{background:#e5ece3;border-radius:4px;height:16px;overflow:hidden}
+.cb-barra .lleno{background:#4f8a2b;height:100%;border-radius:4px}
+.cb-barra.dorado .lleno{background:#d99a2b}
+.cb-barra .n{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.cb-vacio{color:#7a877d;font-size:13px}
+.cb-filtros{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.cb-filtros input,.cb-filtros select{padding:7px 9px;border:2px solid #d5ddd2;border-radius:6px;font-size:14px}
+.cb-filtros input{flex:1;min-width:200px}
+.cb-tabla-wrap{overflow-x:auto}
+#cbTabla{width:100%;border-collapse:collapse;font-size:13px;min-width:860px}
+#cbTabla th{position:sticky;top:0;background:#2e6b3f;color:#fff;text-align:left;padding:7px;font-weight:600}
+#cbTabla td{padding:6px 7px;border-bottom:1px solid #e3e9e1;vertical-align:top}
+#cbTabla td.num{text-align:right;font-variant-numeric:tabular-nums}
+#cbTabla tr:hover td{background:#f4f8f2}
+.cb-chip{display:inline-block;padding:2px 7px;border-radius:10px;font-size:11px;font-weight:700}
+.cb-chip.si{background:#c8e6c9;color:#2e7d32}
+.cb-chip.no{background:#eceff1;color:#607d8b}
+@media (max-width:600px){.cb-barra{grid-template-columns:minmax(0,110px) minmax(0,1fr) 38px}}
+
+/* ============================================ */
+/* PUBLICIDADES · editor de los 2 casilleros     */
+/* ============================================ */
+.pub-abrir{background:#bfe3ee;box-shadow:0 3px 0 #4f8aa0}
+.pub-abrir:hover{background:#d6eef5}
+#pubPanel{position:fixed;inset:0;z-index:5000;background:#eef3ec;overflow-y:auto;display:none;font-family:'Segoe UI',Tahoma,sans-serif;color:#1f2a22}
+#pubPanel.abierto{display:block}
+.pub-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.pub-tab{padding:9px 14px;border:2px solid #c9d6c5;background:#fff;border-radius:8px;cursor:pointer;font-weight:700;font-size:14px;color:#1f4a30}
+.pub-tab.activa{background:#1f4a30;color:#fff;border-color:#1f4a30}
+.pub-ayuda{font-size:13px;color:#56655a;line-height:1.5}
+.pub-slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:14px}
+.pub-slot{background:#fff;border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08);display:grid;gap:10px;min-width:0}
+.pub-slot h3{font-size:15px;color:#1f4a30;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pub-slot label{display:grid;gap:4px;font-size:13px;font-weight:600;color:#33433a}
+.pub-slot input[type=text],.pub-slot input[type=url],.pub-slot textarea{padding:8px 10px;border:2px solid #d5ddd2;border-radius:6px;font-size:14px;font-family:inherit;width:100%}
+.pub-slot textarea{min-height:80px;resize:vertical}
+.pub-fila{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.pub-logo{display:grid;grid-template-columns:84px minmax(0,1fr);gap:10px;align-items:center}
+.pub-logo img{width:84px;height:84px;object-fit:contain;background:#f6eedb;border-radius:10px;border:2px dashed #c9a46a}
+.pub-activo{display:flex!important;grid-template-columns:none!important;align-items:center;gap:6px!important;font-weight:700!important}
+.pub-prev-t{font-size:12px;font-weight:700;color:#56655a;margin-top:4px}
+.pub-prev{display:grid;grid-template-columns:56px minmax(0,1fr);gap:10px;align-items:center;background:#f6eedb;color:#2a1d12;border:3px solid #f0bd5e;border-radius:12px;padding:8px 10px;box-shadow:0 4px 0 #8a5419}
+.pub-prev img{width:56px;height:56px;object-fit:contain;border-radius:8px}
+.pub-prev b{display:block;font-size:14px}
+.pub-prev span{display:block;font-size:13px;color:#5a4632}
+.pub-guardar{padding:10px 14px;background:#2e7d32;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:14px}
+.pub-guardar:disabled{opacity:.6;cursor:wait}
+.pub-msg{font-size:13px;font-weight:600;min-height:1.2em}
+.pub-msg.ok{color:#2e7d32}.pub-msg.err{color:#c62828}
+@media (max-width:420px){.pub-slots{grid-template-columns:1fr}.pub-fila{grid-template-columns:1fr}}
+
+
+#cbPanel{z-index:10}
+.cb-btn-pub{background:#bfe3ee;color:#1f4a30}
+.cb-btn-pub:hover{background:#d6eef5}
+#pubJuegoPanel{position:fixed;inset:0;z-index:5500;background:#eef3ec;overflow-y:auto;display:none;font-family:'Segoe UI',Tahoma,sans-serif;color:#1f2a22}
+#pubJuegoPanel.abierto{display:block}
+
+/* ============================================ */
+/* CÓDIGO DE 4 DÍGITOS (juego / rescate)        */
+/* ============================================ */
+#codigoModal{position:fixed;inset:0;z-index:6000;background:rgba(15,30,20,.65);display:none;align-items:center;justify-content:center;padding:16px}
+#codigoModal.abierto{display:flex}
+.cod-caja{background:#fff;border-radius:16px;padding:24px 22px 18px;width:100%;max-width:340px;display:grid;gap:12px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.cod-caja h3{font-size:18px;color:#1f4a30}
+.cod-caja p{font-size:13px;color:#56655a}
+#codigoInput{font-size:30px;letter-spacing:14px;text-align:center;padding:10px;border:2px solid #c9d6c5;border-radius:10px;width:100%;font-variant-numeric:tabular-nums}
+#codigoInput:focus{outline:none;border-color:#2e7d32}
+.cod-botones{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cod-botones button{padding:11px;border:none;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer}
+.cod-entrar{background:#2e7d32;color:#fff}.cod-entrar:disabled{opacity:.6;cursor:wait}
+.cod-cancelar{background:#eceff1;color:#33433a}
+.cod-msg{font-size:13px;font-weight:600;color:#c62828;min-height:1.2em}
+
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN (mismos usuarios que el panel de Rescate Fauna) ===== -->
+<div id="loginScreen">
+  <form class="login-card" id="loginForm">
+    <img src="logo_macla.png" alt="Macla-IA">
+    <h2>Panel del juego</h2>
+    <p>Entrá con el mismo email y contraseña del panel de Rescate Fauna.</p>
+    <input type="email" id="emailInput" class="login-input" placeholder="Correo electrónico" autocomplete="username" required>
+    <input type="password" id="passwordInput" class="login-input" placeholder="Contraseña" autocomplete="current-password" required>
+    <div class="login-error" id="loginError" aria-live="polite"></div>
+    <button type="submit" class="login-btn" id="loginBtn">Ingresar</button>
+  </form>
+</div>
+
+<!-- ===== ESTADÍSTICAS DEL JUEGO ===== -->
+<div id="cbPanel" aria-labelledby="cbTitulo">
+  <div class="cb-top">
+    <h2 id="cbTitulo">🎮 Juego «Busca el Carpincho»<small>Chicos registrados y avance por etapa</small></h2>
+    <button class="cb-btn-claro" id="cbBtnActualizar" onclick="cbCargar()">🔄 Actualizar</button>
+    <button class="cb-btn-pub" onclick="pubJuegoAbrir()">📢 Publicidades del juego</button>
+    <button class="cb-btn-excel" onclick="cbExcel()">📊 Excel</button>
+    <button class="cb-btn-cerrar" id="cbBtnCerrar" onclick="cerrarSesion()">🚪 Cerrar sesión</button>
+  </div>
+  <div class="cb-body">
+    <div class="cb-estado" id="cbEstado">Cargando datos…</div>
+    <div class="cb-kpis">
+      <div class="cb-kpi"><span>Chicos registrados</span><b id="cbTotal">0</b></div>
+      <div class="cb-kpi"><span>Se registraron hoy</span><b id="cbHoy">0</b></div>
+      <div class="cb-kpi"><span>Últimos 30 días</span><b id="cb30">0</b></div>
+      <div class="cb-kpi"><span>Terminaron el juego</span><b id="cbFin">0</b></div>
+      <div class="cb-kpi"><span>Instalaron la app</span><b id="cbApp">0</b></div>
+      <div class="cb-kpi"><span>Con permiso (apellido)</span><b id="cbPermiso">0</b></div>
+    </div>
+    <div class="cb-grid">
+      <div class="cb-caja"><h3>Hasta dónde llegan</h3><div id="cbEmbudo"></div></div>
+      <div class="cb-caja"><h3>Por provincia</h3><div id="cbProv"></div></div>
+      <div class="cb-caja"><h3>Por ciudad (las 10 con más chicos)</h3><div id="cbCiudad"></div></div>
+      <div class="cb-caja"><h3>Por edad</h3><div id="cbEdad"></div></div>
+    </div>
+    <div class="cb-caja">
+      <h3>Jugadores</h3>
+      <div class="cb-filtros">
+        <input id="cbBuscar" type="search" placeholder="Buscar por nombre o ciudad" oninput="cbTablaPintar()">
+        <select id="cbFiltroEtapa" onchange="cbTablaPintar()">
+          <option value="todos">Todos</option>
+          <option value="0">Sin etapas completas</option>
+          <option value="1">Llegaron a etapa 1</option>
+          <option value="2">Llegaron a etapa 2</option>
+          <option value="3">Llegaron a etapa 3</option>
+          <option value="4">Terminaron las 4</option>
+        </select>
+      </div>
+      <div class="cb-tabla-wrap">
+        <table id="cbTabla">
+          <thead><tr><th>Registro</th><th>Nombre</th><th>Edad</th><th>Ciudad</th><th>Provincia</th><th>Etapas</th><th>Puntos</th><th>Estrellas</th><th>Terminó</th><th>Última vez</th><th>Usa</th></tr></thead>
+          <tbody id="cbTbody"><tr><td colspan="11" class="cb-vacio">Cargando…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===== PUBLICIDADES DEL JUEGO ===== -->
+<div id="pubJuegoPanel" role="dialog" aria-modal="true" aria-labelledby="pubJuegoTitulo">
+  <div class="cb-top">
+    <h2 id="pubJuegoTitulo">📢 Publicidades del juego<small>Los 2 casilleros «Apoyan este juego»</small></h2>
+    <button class="cb-btn-cerrar" onclick="pubJuegoCerrar()">✖ Volver al juego</button>
+  </div>
+  <div class="cb-body">
+    <p class="pub-ayuda">Cada casillero muestra el logo, el nombre y una frase corta. Al tocarlo se abre una ventana con el título, el texto y un botón con el link. Los cambios se ven en el juego la próxima vez que lo abran con internet.</p>
+    <div class="cb-estado" id="pubEstado-juego"></div>
+    <div class="pub-slots" id="pubSlots-juego"></div>
+  </div>
+</div>
+
+
+<!-- ===== CÓDIGO DE 4 DÍGITOS ===== -->
+<div id="codigoModal" role="dialog" aria-modal="true" aria-labelledby="codigoTitulo">
+  <form class="cod-caja" id="codigoForm">
+    <h3 id="codigoTitulo">🔒 Ingresá el código</h3>
+    <p id="codigoAyuda">Código de 4 números</p>
+    <input id="codigoInput" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" aria-label="Código de 4 números">
+    <div class="cod-msg" id="codigoMsg"></div>
+    <div class="cod-botones">
+      <button type="button" class="cod-cancelar" onclick="cerrarCodigo()">Cancelar</button>
+      <button type="submit" class="cod-entrar" id="codigoEntrar">Entrar</button>
+    </div>
+  </form>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ============================================
+// CONFIGURACIÓN (misma base que el panel de Rescate Fauna)
+// ============================================
+const SUPABASE_URL = 'https://iilefvoxigwozzbzgdzb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpbGVmdm94aWd3b3p6YnpnZHpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2MzE4MTAsImV4cCI6MjA3ODIwNzgxMH0.NK5fR9dsYMlweLAICf4ZWIUVcusho1z3kW0AAfzXwqc';
+
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let cbJugadores=[];
+const cbEsc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cbFecha=d=>d?new Date(d).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',hour12:false}):'-';
+
+// ============================================
+// LOGIN Y ARRANQUE
+// ============================================
+function mostrarLogin(){
+  document.getElementById('cbPanel').classList.remove('abierto');
+  document.getElementById('loginScreen').classList.add('abierto');
+}
+function entrarAlPanel(){
+  document.getElementById('loginScreen').classList.remove('abierto');
+  pedirCodigo('juego',()=>{document.getElementById('cbPanel').classList.add('abierto');cbCargar();});
+}
+async function cerrarSesion(){
+  try{await supabaseClient.auth.signOut();}catch(e){}
+  location.reload();
+}
+document.getElementById('loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const err=document.getElementById('loginError'),btn=document.getElementById('loginBtn');
+  err.textContent='';btn.disabled=true;
+  const { error } = await supabaseClient.auth.signInWithPassword({
+    email:document.getElementById('emailInput').value.trim(),
+    password:document.getElementById('passwordInput').value
+  });
+  btn.disabled=false;
+  if(error){err.textContent='Email o contraseña incorrectos.';return;}
+  entrarAlPanel();
+});
+
+// ============================================
+// PUBLICIDADES DEL JUEGO (tabla "acompanan", app = juego)
+// ============================================
+const PUB_CASILLEROS={juego:2};
+let pubDatos={};
+const PUB_VACIO='data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+const pubLogo=id=>{const s=document.getElementById('pl-'+id).getAttribute('src')||'';return s.startsWith('data:')?'':s;};
+// pide el código de Publicidades cada vez
+function pubJuegoAbrir(){pedirCodigo('rescate',()=>{document.getElementById('pubJuegoPanel').classList.add('abierto');pubCargar('juego');});}
+function pubJuegoCerrar(){document.getElementById('pubJuegoPanel').classList.remove('abierto');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('pubJuegoPanel').classList.contains('abierto'))pubJuegoCerrar();});
+function inicializarBanner(){}   // (en el panel de rescate actualiza el banner; acá no hace falta)
+async function pubCargar(app){
+  const est=document.getElementById('pubEstado-'+app);est.textContent='Cargando…';
+  try{
+    const { data:{ session } } = await supabaseClient.auth.getSession();
+    if(!session){est.textContent='⚠️ Tu sesión venció. Cerrá sesión y volvé a ingresar.';return;}
+    const { data, error } = await supabaseClient.from('acompanan').select('*').eq('app',app).order('posicion');
+    if(error)throw error;
+    for(const r of data||[])pubDatos[r.app+'-'+r.posicion]=r;
+    est.textContent='';pubPintar(app);
+  }catch(err){console.error('Publicidades:',err);est.textContent='❌ No se pudieron cargar: '+(err.message||err)+'. ¿Corriste acompanan.sql en Supabase?';}
+}
+
+function pubPintar(app){
+  const cont=document.getElementById('pubSlots-'+app);
+  const posiciones=Array.from({length:PUB_CASILLEROS[app]},(_,i)=>i+1);
+  cont.innerHTML=posiciones.map(pos=>{
+    const r=pubDatos[app+'-'+pos]||{activo:true};const id=app+'-'+pos;
+    return `<div class="pub-slot" data-pos="${pos}">
+      <h3>Casillero ${pos}<label class="pub-activo"><input type="checkbox" id="pa-${id}" ${r.activo!==false?'checked':''}> Mostrar</label></h3>
+      <div class="pub-logo"><img id="pl-${id}" src="${cbEsc(r.logo_url||PUB_VACIO)}" alt="Logo">
+        <label>Logo (imagen cuadrada, PNG o JPG, hasta 1 MB)<input type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onchange="pubSubirLogo('${app}',${pos},this)"></label></div>
+      <div class="pub-fila">
+        <label>Nombre<input type="text" id="pn-${id}" maxlength="60" value="${cbEsc(r.nombre||'')}" placeholder="Municipalidad de…" oninput="pubPrev('${app}',${pos})"></label>
+        <label>Frase corta<input type="text" id="pf-${id}" maxlength="80" value="${cbEsc(r.frase||'')}" placeholder="${app==='juego'?'Apoya este juego':'Nos acompaña'}" oninput="pubPrev('${app}',${pos})"></label>
+      </div>
+      <label>Título de la ventana<input type="text" id="pt-${id}" maxlength="80" value="${cbEsc(r.titulo||'')}" placeholder="Si lo dejás vacío, usa el nombre"></label>
+      <label>Texto de la ventana<textarea id="px-${id}" maxlength="600" placeholder="Lo que quieran contar">${cbEsc(r.texto||'')}</textarea></label>
+      <div class="pub-fila">
+        <label>Link (https://…)<input type="url" id="pk-${id}" maxlength="300" value="${cbEsc(r.link||'')}" placeholder="https://www.ejemplo.gob.ar"></label>
+        <label>Texto del botón<input type="text" id="pb-${id}" maxlength="40" value="${cbEsc(r.link_texto||'')}" placeholder="Visitar la página"></label>
+      </div>
+      <div class="pub-prev-t">Así se ve el casillero:</div>
+      <div class="pub-prev" id="pp-${id}"></div>
+      <button class="pub-guardar" id="pg-${id}" onclick="pubGuardar('${app}',${pos})">💾 Guardar casillero ${pos}</button>
+      <div class="pub-msg" id="pm-${id}"></div>
+    </div>`;}).join('');
+  posiciones.forEach(pos=>pubPrev(app,pos));
+}
+function pubPrev(app,pos){
+  const id=app+'-'+pos,g=k=>document.getElementById(k+'-'+id);
+  g('pp').innerHTML=`<img src="${cbEsc(pubLogo(id)||PUB_VACIO)}" alt=""><span><b>${cbEsc(g('pn').value||'Nombre')}</b><span>${cbEsc(g('pf').value||'Frase corta')}</span></span>`;
+}
+async function pubSubirLogo(app,pos,input){
+  const id=app+'-'+pos,msg=document.getElementById('pm-'+id),f=input.files[0];
+  if(!f)return;
+  if(f.size>1024*1024){msg.className='pub-msg err';msg.textContent='La imagen pesa más de 1 MB. Achicala y probá de nuevo.';input.value='';return;}
+  msg.className='pub-msg';msg.textContent='Subiendo logo…';
+  try{
+    const ext=(f.name.split('.').pop()||'png').toLowerCase().replace(/[^a-z0-9]/g,'');
+    const ruta=`${app}-${pos}-${Date.now()}.${ext}`;
+    const { error } = await supabaseClient.storage.from('acompanan-logos').upload(ruta,f,{contentType:f.type,upsert:true});
+    if(error)throw error;
+    const { data } = supabaseClient.storage.from('acompanan-logos').getPublicUrl(ruta);
+    document.getElementById('pl-'+id).src=data.publicUrl;pubPrev(app,pos);
+    msg.className='pub-msg ok';msg.textContent='Logo subido. Tocá «Guardar» para que se use.';
+  }catch(err){msg.className='pub-msg err';msg.textContent='No se pudo subir el logo: '+(err.message||err);}
+}
+async function pubGuardar(app,pos){
+  const id=app+'-'+pos,g=k=>document.getElementById(k+'-'+id),msg=g('pm'),btn=g('pg');
+  const link=g('pk').value.trim();
+  if(link&&!/^https?:\/\//i.test(link)){msg.className='pub-msg err';msg.textContent='El link tiene que empezar con https://';return;}
+  if(!g('pn').value.trim()){msg.className='pub-msg err';msg.textContent='Escribí el nombre del patrocinador.';return;}
+  const fila={app,posicion:pos,activo:g('pa').checked,logo_url:pubLogo(id)||null,nombre:g('pn').value.trim(),frase:g('pf').value.trim(),
+    titulo:g('pt').value.trim(),texto:g('px').value.trim(),link:link||null,link_texto:g('pb').value.trim(),actualizado:new Date().toISOString()};
+  btn.disabled=true;msg.className='pub-msg';msg.textContent='Guardando…';
+  try{
+    const { data, error } = await supabaseClient.from('acompanan').upsert(fila,{onConflict:'app,posicion'}).select();
+    if(error)throw error;
+    pubDatos[id]=(data&&data[0])||fila;
+    msg.className='pub-msg ok';msg.textContent='✅ Guardado. Ya se ve en '+(app==='juego'?'el juego':'la app de rescate y arriba en el panel')+'.';
+    if(app==='rescate')inicializarBanner();
+  }catch(err){msg.className='pub-msg err';msg.textContent='❌ No se pudo guardar: '+(err.message||err);}
+  btn.disabled=false;
+}
+
+// ============================================
+// ESTADÍSTICAS DEL JUEGO (tabla carpibocha_eventos)
+// ============================================
+let cbCargando=false;
+async function cbCargar(){
+  if(cbCargando)return;
+  cbCargando=true;
+  const estado=document.getElementById('cbEstado'),btn=document.getElementById('cbBtnActualizar');
+  const antes=cbJugadores.length;
+  btn.disabled=true;btn.textContent='⏳ Actualizando…';
+  estado.textContent='Cargando datos…';
+  try{
+    const { data:{ session } } = await supabaseClient.auth.getSession();
+    if(!session){estado.textContent='⚠️ Tu sesión venció. Cerrá sesión y volvé a ingresar para ver los datos del juego.';return;}
+    let filas=[],desde=0;
+    while(true){   // Supabase entrega de a 1000 filas
+      const { data, error } = await supabaseClient.from('carpibocha_eventos').select('*').order('creado',{ascending:true}).range(desde,desde+999);
+      if(error)throw error;
+      filas=filas.concat(data||[]);
+      if(!data||data.length<1000)break;
+      desde+=1000;
+    }
+    cbJugadores=cbAgrupar(filas);
+    cbPintar();
+    const nuevos=cbJugadores.length-antes;
+    estado.textContent=`Actualizado: ${cbFecha(new Date())} · ${filas.length} registros de actividad · se actualiza solo cada 30 segundos`+(antes&&nuevos>0?` · 🆕 ${nuevos} jugador${nuevos>1?'es':''} nuevo${nuevos>1?'s':''}`:'');
+  }catch(err){
+    console.error('Juego Carpibocha:',err);
+    estado.textContent='❌ No se pudieron cargar los datos del juego: '+(err.message||err);
+  }finally{
+    cbCargando=false;btn.disabled=false;btn.textContent='🔄 Actualizar';
+  }
+}
+// con el juego abierto, se actualiza solo cada 30 segundos (si la pestaña está a la vista)
+setInterval(()=>{if(document.getElementById('cbPanel').classList.contains('abierto')&&!document.hidden)cbCargar();},30000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&document.getElementById('cbPanel').classList.contains('abierto'))cbCargar();});
+
+// Junta todos los eventos de un mismo chico en una sola fila
+function cbAgrupar(filas){
+  const m=new Map();
+  for(const f of filas){
+    let j=m.get(f.jugador_id);
+    if(!j){j={id:f.jugador_id,registro:f.creado,ultima:f.creado,etapas:{},termino:false,app:f.app};m.set(f.jugador_id,j);}
+    if(f.tipo==='registro'||f.tipo==='cambio de datos'||!j.nombre){
+      Object.assign(j,{nombre:f.nombre,apellido:f.apellido,edad:f.edad,ciudad:f.ciudad,provincia:f.provincia});
+    }
+    if(f.tipo==='registro')j.registro=f.creado;
+    if(f.tipo==='etapa completa'&&f.etapa){
+      const e=j.etapas[f.etapa]||{puntos:0,estrellas:0};
+      j.etapas[f.etapa]={puntos:Math.max(e.puntos,f.puntos||0),estrellas:Math.max(e.estrellas,f.estrellas||0)};
+    }
+    if(f.tipo==='juego terminado')j.termino=true;
+    if(f.permiso)j.permiso=true;
+    if(f.app==='instalada')j.app='instalada';
+    j.ultima=f.creado;
+  }
+  return [...m.values()].map(j=>{
+    const ets=Object.keys(j.etapas).map(Number);
+    j.maxEtapa=ets.length?Math.max(...ets):0;
+    j.puntos=Object.values(j.etapas).reduce((a,e)=>a+e.puntos,0);
+    j.estrellas=Object.values(j.etapas).reduce((a,e)=>a+e.estrellas,0);
+    j.nombreCompleto=[j.nombre,j.apellido].filter(Boolean).join(' ')||'(sin nombre)';
+    return j;
+  }).sort((a,b)=>new Date(b.registro)-new Date(a.registro));
+}
+
+function cbBarras(id,pares,dorado){
+  const el=document.getElementById(id);
+  if(!pares.length){el.innerHTML='<p class="cb-vacio">Todavía no hay datos.</p>';return;}
+  const max=Math.max(...pares.map(p=>p[1]),1);
+  el.innerHTML=pares.map(([et,n],i)=>`<div class="cb-barra${dorado&&dorado(i)?' dorado':''}"><span class="et" title="${cbEsc(et)}">${cbEsc(et)}</span><div class="pista"><div class="lleno" style="width:${(n/max*100).toFixed(1)}%"></div></div><span class="n">${n}</span></div>`).join('');
+}
+function cbContar(lista,clave){
+  const c=new Map();
+  for(const j of lista){const v=(j[clave]||'').toString().trim()||'Sin dato';c.set(v,(c.get(v)||0)+1);}
+  return [...c.entries()].sort((a,b)=>b[1]-a[1]);
+}
+
+function cbPintar(){
+  const J=cbJugadores,ahora=Date.now(),hoy=new Date().toDateString();
+  document.getElementById('cbTotal').textContent=J.length;
+  document.getElementById('cbHoy').textContent=J.filter(j=>new Date(j.registro).toDateString()===hoy).length;
+  document.getElementById('cb30').textContent=J.filter(j=>ahora-new Date(j.registro)<30*864e5).length;
+  document.getElementById('cbFin').textContent=J.filter(j=>j.termino).length;
+  document.getElementById('cbApp').textContent=J.filter(j=>j.app==='instalada').length;
+  document.getElementById('cbPermiso').textContent=J.filter(j=>j.permiso).length;
+  cbBarras('cbEmbudo',[
+    ['Se registraron',J.length],
+    ['Etapa 1 · Jaaukanigás',J.filter(j=>j.maxEtapa>=1).length],
+    ['Etapa 2 · Pasarelas',J.filter(j=>j.maxEtapa>=2).length],
+    ['Etapa 3 · Bajos Submer.',J.filter(j=>j.maxEtapa>=3).length],
+    ['Etapa 4 · Cuña Boscosa',J.filter(j=>j.maxEtapa>=4).length],
+    ['Terminaron el juego',J.filter(j=>j.termino).length]
+  ],i=>i===5);
+  cbBarras('cbProv',cbContar(J,'provincia'));
+  cbBarras('cbCiudad',cbContar(J,'ciudad').slice(0,10));
+  const edades=cbContar(J,'edad').sort((a,b)=>(parseInt(a[0])||99)-(parseInt(b[0])||99)).map(([e,n])=>[/^\d+$/.test(e)?e+' años':e==='18+'?'18 o más':e,n]);
+  cbBarras('cbEdad',edades);
+  cbTablaPintar();
+}
+
+function cbFiltrados(){
+  const q=(document.getElementById('cbBuscar').value||'').toLowerCase().trim();
+  const fe=document.getElementById('cbFiltroEtapa').value;
+  return cbJugadores.filter(j=>{
+    if(q&&!(`${j.nombreCompleto} ${j.ciudad||''} ${j.provincia||''}`.toLowerCase().includes(q)))return false;
+    if(fe==='0'&&j.maxEtapa!==0)return false;
+    if(fe!=='todos'&&fe!=='0'&&j.maxEtapa<+fe)return false;
+    return true;
+  });
+}
+function cbTablaPintar(){
+  const L=cbFiltrados(),tb=document.getElementById('cbTbody');
+  if(!L.length){tb.innerHTML=`<tr><td colspan="11" class="cb-vacio">${cbJugadores.length?'Ningún jugador coincide con la búsqueda.':'Todavía no se registró ningún chico. Los datos aparecen cuando alguien juega con la casilla de permiso marcada.'}</td></tr>`;return;}
+  tb.innerHTML=L.map(j=>`<tr>
+    <td>${cbFecha(j.registro)}</td>
+    <td>${cbEsc(j.nombreCompleto)}</td>
+    <td>${cbEsc(j.edad||'-')}</td>
+    <td>${cbEsc(j.ciudad||'-')}</td>
+    <td>${cbEsc(j.provincia||'-')}</td>
+    <td class="num">${j.maxEtapa} de 4</td>
+    <td class="num">${j.puntos}</td>
+    <td class="num">${j.estrellas}</td>
+    <td>${j.termino?'<span class="cb-chip si">Sí</span>':'<span class="cb-chip no">No</span>'}</td>
+    <td>${cbFecha(j.ultima)}</td>
+    <td>${j.app==='instalada'?'App':'Navegador'}</td>
+  </tr>`).join('');
+}
+
+function cbExcel(){
+  const c=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  let csv='Registro;Nombre;Apellido;Edad;Ciudad;Provincia;Etapas completas;Puntos;Estrellas;Terminó;Última vez;Usa\n';
+  for(const j of cbFiltrados()){
+    csv+=[cbFecha(j.registro),j.nombre,j.apellido,j.edad,j.ciudad,j.provincia,j.maxEtapa,j.puntos,j.estrellas,j.termino?'Sí':'No',cbFecha(j.ultima),j.app==='instalada'?'App':'Navegador'].map(c).join(';')+'\n';
+  }
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const u=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=u;a.download='carpibocha_jugadores_'+new Date().toLocaleDateString('es-AR').replace(/\//g,'-')+'.csv';
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);
+}
+</script>
+
+<script>
+document.body.appendChild(document.getElementById('codigoModal')); // directo en <body>, visible aunque el panel de reportes esté oculto
+const codigoOk={};
+let codigoSeccion=null,codigoAlAbrir=null;
+const CODIGO_NOMBRES={juego:'🎮 Panel del juego',rescate:'📢 Publicidades'};
+
+// Publicidades («rescate») pide el código SIEMPRE, cada vez que se entra. El juego lo pide una vez por pestaña.
+const CODIGO_SIEMPRE={rescate:true};
+function pedirCodigo(seccion,alAbrir){
+  if(codigoOk[seccion]&&!CODIGO_SIEMPRE[seccion])return alAbrir();
+  codigoSeccion=seccion;codigoAlAbrir=alAbrir;
+  document.getElementById('codigoAyuda').textContent='Código de 4 números para '+CODIGO_NOMBRES[seccion];
+  document.getElementById('codigoMsg').textContent='';
+  const inp=document.getElementById('codigoInput');inp.value='';
+  document.getElementById('codigoModal').classList.add('abierto');
+  setTimeout(()=>inp.focus(),50);
+}
+function cerrarCodigo(){document.getElementById('codigoModal').classList.remove('abierto');codigoSeccion=null;codigoAlAbrir=null;
+  // si cancela el código del panel, vuelve al login
+  if(!codigoOk.juego)mostrarLogin();}
+
+document.getElementById('codigoInput').addEventListener('input',e=>{
+  e.target.value=e.target.value.replace(/\D/g,'').slice(0,4);
+  if(e.target.value.length===4)document.getElementById('codigoForm').requestSubmit();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('codigoModal').classList.contains('abierto'))cerrarCodigo();});
+
+document.getElementById('codigoForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const inp=document.getElementById('codigoInput'),msg=document.getElementById('codigoMsg'),btn=document.getElementById('codigoEntrar');
+  const codigo=inp.value;
+  if(!/^\d{4}$/.test(codigo)){msg.textContent='Son 4 números.';return;}
+  btn.disabled=true;msg.style.color='#56655a';msg.textContent='Verificando…';
+  try{
+    const { data:{ session } } = await supabaseClient.auth.getSession();
+    if(!session){msg.style.color='';msg.textContent='Tu sesión venció. Cerrá sesión y volvé a ingresar.';return;}
+    const { data, error } = await supabaseClient.rpc('verificar_codigo',{p_seccion:codigoSeccion,p_codigo:codigo});
+    msg.style.color='';
+    if(error){
+      msg.textContent=/bloqueado/i.test(error.message)?'Demasiados intentos. Esperá 10 minutos y probá de nuevo.':'No se pudo verificar: '+error.message;
+      inp.value='';return;
+    }
+    if(data===true){
+      if(!CODIGO_SIEMPRE[codigoSeccion])codigoOk[codigoSeccion]=true;
+      const abrir=codigoAlAbrir;cerrarCodigo();abrir();
+    }else{
+      msg.textContent='Código incorrecto.';inp.value='';inp.focus();
+    }
+  }catch(err){msg.style.color='';msg.textContent='No se pudo verificar: '+(err.message||err);}
+  finally{btn.disabled=false;}
+});
+
+// arranque: si ya hay sesión, pide el código; si no, muestra el login
+(async()=>{
+  try{const { data:{ session } } = await supabaseClient.auth.getSession();if(session)return entrarAlPanel();}catch(e){}
+  mostrarLogin();
+})();
+</script>
+</body>
+</html>
